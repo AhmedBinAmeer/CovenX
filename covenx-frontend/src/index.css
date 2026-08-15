@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-200 ease-in-out;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-slate-700 rounded-full;
+}
+
+/* Hybrid Theme utility classes */
+.theme-editor-light {
+  @apply bg-white text-gray-900 border-gray-200;
+}
+
+.theme-analytics-dark {
+  @apply bg-slate-900 text-slate-100 border-slate-800;
+}

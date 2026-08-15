@@ -1,0 +1,17 @@
+{
+  "name": "covenx-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CovenX Production MERN Monorepo",
+  "scripts": {
+    "dev:backend": "npm --prefix covenx-backend run dev",
+    "dev:frontend": "npm --prefix covenx-frontend run dev",
+    "build:backend": "npm --prefix covenx-backend run build",
+    "build:frontend": "npm --prefix covenx-frontend run build",
+    "build": "npm run build:backend && npm run build:frontend"
+  },
+  "workspaces": [
+    "covenx-backend",
+    "covenx-frontend"
+  ]
+}
