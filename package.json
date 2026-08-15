@@ -4,6 +4,8 @@
   "private": true,
   "description": "CovenX Production MERN Monorepo",
   "scripts": {
+    "dev": "npm run dev:frontend",
+    "dev:all": "npm run dev:backend & npm run dev:frontend",
     "dev:backend": "npm --prefix covenx-backend run dev",
     "dev:frontend": "npm --prefix covenx-frontend run dev",
     "build:backend": "npm --prefix covenx-backend run build",
