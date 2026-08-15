@@ -6,7 +6,10 @@ import { ThemeProvider } from './context/ThemeContext.js';
 import { Navbar } from './components/layout/Navbar.js';
 import { Sidebar } from './components/layout/Sidebar.js';
 import { Dashboard } from './pages/Dashboard.js';
+import { ContractList } from './pages/ContractList.js';
+import { ContractDetail } from './pages/ContractDetail.js';
 import { Editor } from './pages/Editor.js';
+import { Templates } from './pages/Templates.js';
 import { Login } from './pages/Login.js';
 
 export const App: React.FC = () => {
@@ -22,7 +25,10 @@ export const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/contracts" element={<ContractList />} />
+                  <Route path="/contracts/:id" element={<ContractDetail />} />
                   <Route path="/editor" element={<Editor />} />
+                  <Route path="/templates" element={<Templates />} />
                   <Route path="/login" element={<Login />} />
                 </Routes>
               </main>

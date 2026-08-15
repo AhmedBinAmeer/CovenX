@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserRepository } from '../repositories/user.repository.js';
-import { IUser } from '../models/User.model.js';
+import { IUser, UserRole } from '../models/User.model.js';
 import { config } from '../config/env.js';
 
 export class AuthService {
@@ -11,7 +11,7 @@ export class AuthService {
     this.userRepository = new UserRepository();
   }
 
-  async register(name: string, email: string, password: string, role?: 'admin' | 'author' | 'viewer') {
+  async register(name: string, email: string, password: string, role?: UserRole) {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new Error('User with this email already exists');
@@ -24,7 +24,7 @@ export class AuthService {
       name,
       email,
       passwordHash,
-      role: role || 'author',
+      role: role || UserRole.CONTRACT_MANAGER,
     });
 
     const token = this.generateToken(user);

@@ -11,9 +11,13 @@ export class ContractController {
 
   createContract = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { title, content, value } = req.body;
-      const authorId = req.user?.id || 'anonymous';
-      const contract = await this.contractService.createContract(title, content, value, authorId);
+      const authorId = req.user?.id || 'usr_architect';
+      const authorName = req.user?.email || 'System Architect';
+      const contract = await this.contractService.createContract({
+        ...req.body,
+        authorId,
+        authorName,
+      });
 
       const response: ApiResponse = {
         success: true,
@@ -56,7 +60,13 @@ export class ContractController {
 
   listContracts = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const contracts = await this.contractService.getAllContracts();
+      const { status, type, department, search } = req.query;
+      const contracts = await this.contractService.listContracts({
+        status: status as string,
+        type: type as string,
+        department: department as string,
+        search: search as string,
+      });
 
       const response: ApiResponse = {
         success: true,
@@ -70,45 +80,96 @@ export class ContractController {
     }
   };
 
-  updateContract = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  updateContentAndVersion = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const updated = await this.contractService.updateContract(id, req.body);
+      const { title, content, changeSummary } = req.body;
+      const actorId = req.user?.id || 'usr_architect';
+      const updatedBy = req.user?.email || 'System Architect';
+
+      const updated = await this.contractService.updateContentAndVersion(
+        id,
+        title,
+        content,
+        updatedBy,
+        actorId,
+        changeSummary
+      );
 
       if (!updated) {
-        const response: ApiResponse = {
-          success: false,
-          data: null,
-          error: 'Contract not found or failed to update',
-        };
-        res.status(404).json(response);
+        res.status(404).json({ success: false, data: null, error: 'Contract not found' });
         return;
       }
 
-      const response: ApiResponse = {
-        success: true,
-        data: updated,
-        error: null,
-      };
-
-      res.status(200).json(response);
+      res.status(200).json({ success: true, data: updated, error: null });
     } catch (error: any) {
       next(error);
     }
   };
 
-  deleteContract = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  submitForApproval = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const deleted = await this.contractService.deleteContract(id);
+      const actorId = req.user?.id || 'usr_architect';
+      const actorName = req.user?.email || 'System Architect';
 
-      const response: ApiResponse = {
-        success: deleted,
-        data: { id, deleted },
-        error: deleted ? null : 'Failed to delete contract',
-      };
+      const updated = await this.contractService.submitForApproval(id, actorId, actorName);
+      res.status(200).json({ success: true, data: updated, error: null });
+    } catch (error: any) {
+      next(error);
+    }
+  };
 
-      res.status(deleted ? 200 : 400).json(response);
+  approveStep = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { step, comments } = req.body;
+      const approverId = req.user?.id || 'usr_architect';
+      const approverName = req.user?.email || 'System Approver';
+      const role = req.user?.role || 'LEGAL_REVIEWER';
+
+      const updated = await this.contractService.approveStep(
+        id,
+        Number(step),
+        approverId,
+        approverName,
+        role,
+        comments
+      );
+
+      res.status(200).json({ success: true, data: updated, error: null });
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  signContract = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { signerName, signerEmail } = req.body;
+      const actorId = req.user?.id || 'usr_architect';
+
+      const updated = await this.contractService.simulateDigitalSignature(
+        id,
+        signerName || 'Authorized Signer',
+        signerEmail || 'signer@covenx.io',
+        actorId
+      );
+
+      res.status(200).json({ success: true, data: updated, error: null });
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  addObligation = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const actorId = req.user?.id || 'usr_architect';
+      const actorName = req.user?.email || 'System Architect';
+
+      const updated = await this.contractService.addObligation(id, req.body, actorId, actorName);
+      res.status(201).json({ success: true, data: updated, error: null });
     } catch (error: any) {
       next(error);
     }
