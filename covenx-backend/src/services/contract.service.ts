@@ -12,6 +12,15 @@ export class ContractService {
     this.auditRepository = new AuditRepository();
   }
 
+  private async invalidateAnalyticsCache() {
+    try {
+      const redis = (await import('../config/redis.js')).getRedisClient();
+      if (redis && redis.isOpen) {
+        await redis.del('covenx:analytics:dashboard');
+      }
+    } catch (err) {}
+  }
+
   private generateContractNumber(type: string): string {
     const randomHex = crypto.randomBytes(3).toString('hex').toUpperCase();
     return `CVX-${type}-${new Date().getFullYear()}-${randomHex}`;
