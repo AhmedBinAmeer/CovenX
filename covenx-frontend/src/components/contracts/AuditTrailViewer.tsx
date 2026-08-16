@@ -10,7 +10,7 @@ export const AuditTrailViewer: React.FC<AuditTrailViewerProps> = ({ logs }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-        <Activity className="w-4 h-4 text-brand-500" /> Immutable Audit Logs & Event Trail
+        <Activity className="w-4 h-4 text-ember-500" /> Immutable Audit Logs & Event Trail
       </h3>
 
       <div className="bg-white dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 rounded-xl divide-y divide-gray-100 dark:divide-slate-700 max-h-96 overflow-y-auto">
@@ -21,7 +21,7 @@ export const AuditTrailViewer: React.FC<AuditTrailViewerProps> = ({ logs }) => {
             <div key={log._id} className="p-3 text-xs flex items-start justify-between hover:bg-gray-50/50 dark:hover:bg-slate-800/50">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-600 dark:text-brand-400 font-bold uppercase text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-ember-500/10 text-ember-600 dark:text-ember-400 font-bold uppercase text-[10px]">
                     {log.action}
                   </span>
                   <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-1">

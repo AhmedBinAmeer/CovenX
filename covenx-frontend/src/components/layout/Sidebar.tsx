@@ -4,16 +4,22 @@ import { LayoutDashboard, FileText, FileEdit, BookOpen, LogIn } from 'lucide-rea
 
 export const Sidebar: React.FC = () => {
   const navItems = [
-    { to: '/dashboard', label: 'Executive Analytics', icon: LayoutDashboard },
-    { to: '/contracts', label: 'Contract Repository', icon: FileText },
-    { to: '/editor', label: 'Authoring Studio', icon: FileEdit },
-    { to: '/templates', label: 'Templates & Clauses', icon: BookOpen },
-    { to: '/login', label: 'Auth & Roles', icon: LogIn },
+    { to: '/dashboard',  label: 'Executive Analytics', icon: LayoutDashboard, accent: 'ember'  },
+    { to: '/contracts',  label: 'Contract Repository',  icon: FileText,         accent: 'navy'   },
+    { to: '/editor',     label: 'Authoring Studio',     icon: FileEdit,         accent: 'forest' },
+    { to: '/templates',  label: 'Templates & Clauses',  icon: BookOpen,         accent: 'navy'   },
+    { to: '/login',      label: 'Auth & Roles',         icon: LogIn,            accent: 'ember'  },
   ];
 
+  const activeAccent: Record<string, string> = {
+    ember:  'bg-ember-500 text-white shadow-ember-sm',
+    navy:   'bg-navy-500 text-white shadow-brand-sm',
+    forest: 'bg-forest-500 text-white shadow-forest-sm',
+  };
+
   return (
-    <aside className="w-64 border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 min-h-[calc(100vh-4rem)] p-4 flex flex-col justify-between transition-colors">
-      <nav className="space-y-1.5">
+    <aside className="w-64 border-r border-navy-100 dark:border-navy-900 bg-white dark:bg-[#0c101a] min-h-[calc(100vh-4rem)] p-4 flex flex-col justify-between transition-colors">
+      <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -21,10 +27,10 @@ export const Sidebar: React.FC = () => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 font-semibold'
-                    : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800/80 hover:text-gray-900 dark:hover:text-white'
+                    ? `${activeAccent[item.accent]} font-semibold`
+                    : 'text-navy-500 dark:text-slate-400 hover:bg-navy-50 dark:hover:bg-navy-900/40 hover:text-navy-700 dark:hover:text-white'
                 }`
               }
             >
@@ -35,9 +41,10 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      <div className="p-3.5 bg-gray-50 dark:bg-slate-800/50 rounded-xl text-xs border border-gray-100 dark:border-slate-800">
-        <p className="font-bold text-gray-800 dark:text-slate-200">EEF MS-347 Platform</p>
-        <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">350,000 Active Contracts Scale Architecture</p>
+      {/* Footer badge */}
+      <div className="p-3.5 rounded-xl text-xs border gradient-navy-green text-white/90">
+        <p className="font-bold">CovenX CLM Platform</p>
+        <p className="text-[11px] text-white/60 mt-0.5">350K Active Contracts · Enterprise Scale</p>
       </div>
     </aside>
   );

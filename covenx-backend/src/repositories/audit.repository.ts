@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository.js';
-import { AuditLogModel, IAuditLog } from '../models/AuditLog.model.js';
+import { BaseRepository } from './base.repository';
+import { AuditLogModel, IAuditLog } from '../models/AuditLog.model';
 
 export class AuditRepository extends BaseRepository<IAuditLog> {
   constructor() {

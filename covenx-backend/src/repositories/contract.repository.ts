@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository.js';
-import { ContractModel, IContract } from '../models/Contract.model.js';
+import { BaseRepository } from './base.repository';
+import { ContractModel, IContract } from '../models/Contract.model';
 
 export class ContractRepository extends BaseRepository<IContract> {
   constructor() {

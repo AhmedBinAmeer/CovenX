@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository.js';
-import { TemplateModel, ITemplate } from '../models/Template.model.js';
+import { BaseRepository } from './base.repository';
+import { TemplateModel, ITemplate } from '../models/Template.model';
 
 export class TemplateRepository extends BaseRepository<ITemplate> {
   constructor() {

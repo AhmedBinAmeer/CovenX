@@ -30,7 +30,7 @@ export const ObligationsTable: React.FC<ObligationsProps> = ({ obligations, onAd
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-          <CheckSquare className="w-4 h-4 text-brand-500" /> Post-Signature Obligations & SLA Deadlines
+          <CheckSquare className="w-4 h-4 text-navy-500" /> Post-Signature Obligations & SLA Deadlines
         </h3>
         {onAddObligation && (
           <Button size="sm" variant="secondary" onClick={() => setShowAdd(!showAdd)}>
@@ -89,7 +89,7 @@ export const ObligationsTable: React.FC<ObligationsProps> = ({ obligations, onAd
                 <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/50">
                   <td className="p-3 font-medium text-gray-900 dark:text-white">{item.title}</td>
                   <td className="p-3">
-                    <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold">
+                    <span className="px-2 py-0.5 rounded bg-navy-500/10 text-navy-600 dark:text-navy-300 text-[10px] font-bold">
                       {item.type}
                     </span>
                   </td>

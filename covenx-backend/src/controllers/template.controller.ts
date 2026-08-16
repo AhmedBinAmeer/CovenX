@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { TemplateService } from '../services/template.service.js';
-import { ApiResponse } from '../types/index.js';
+import { TemplateService } from '../services/template.service';
+import { ApiResponse } from '../types/index';
 
 export class TemplateController {
   private templateService: TemplateService;

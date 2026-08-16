@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository.js';
-import { NotificationModel, INotification } from '../models/Notification.model.js';
+import { BaseRepository } from './base.repository';
+import { NotificationModel, INotification } from '../models/Notification.model';
 
 export class NotificationRepository extends BaseRepository<INotification> {
   constructor() {

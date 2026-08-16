@@ -1,5 +1,5 @@
-import { TemplateRepository } from '../repositories/template.repository.js';
-import { ITemplate } from '../models/Template.model.js';
+import { TemplateRepository } from '../repositories/template.repository';
+import { ITemplate } from '../models/Template.model';
 
 export class TemplateService {
   private templateRepository: TemplateRepository;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnalyticsService } from '../services/analytics.service.js';
-import { ApiResponse } from '../types/index.js';
+import { AnalyticsService } from '../services/analytics.service';
+import { ApiResponse } from '../types/index';
 
 export class AnalyticsController {
   private analyticsService: AnalyticsService;

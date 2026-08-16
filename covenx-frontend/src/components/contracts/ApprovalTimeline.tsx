@@ -13,7 +13,7 @@ export const ApprovalTimeline: React.FC<TimelineProps> = ({ workflow, onApproveS
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-brand-500" /> Multi-Level Approval Workflow
+        <ShieldCheck className="w-4 h-4 text-forest-500" /> Multi-Level Approval Workflow
       </h3>
 
       <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200 dark:before:bg-slate-700">

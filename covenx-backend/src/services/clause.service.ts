@@ -1,5 +1,5 @@
-import { ClauseRepository } from '../repositories/clause.repository.js';
-import { IClause } from '../models/Clause.model.js';
+import { ClauseRepository } from '../repositories/clause.repository';
+import { IClause } from '../models/Clause.model';
 
 export class ClauseService {
   private clauseRepository: ClauseRepository;

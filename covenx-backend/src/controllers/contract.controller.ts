@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import { ContractService } from '../services/contract.service.js';
-import { AuthenticatedRequest, ApiResponse } from '../types/index.js';
+import { ContractService } from '../services/contract.service';
+import { AuthenticatedRequest, ApiResponse } from '../types/index';
 
 export class ContractController {
   private contractService: ContractService;

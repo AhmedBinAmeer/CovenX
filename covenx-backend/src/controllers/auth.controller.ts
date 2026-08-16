@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/auth.service.js';
-import { ApiResponse } from '../types/index.js';
+import { AuthService } from '../services/auth.service';
+import { ApiResponse } from '../types/index';
 
 export class AuthController {
   private authService: AuthService;

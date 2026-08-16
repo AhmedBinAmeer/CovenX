@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuditService } from '../services/audit.service.js';
-import { ApiResponse } from '../types/index.js';
+import { AuditService } from '../services/audit.service';
+import { ApiResponse } from '../types/index';
 
 export class AuditController {
   private auditService: AuditService;

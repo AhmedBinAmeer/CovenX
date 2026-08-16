@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ClauseService } from '../services/clause.service.js';
-import { ApiResponse } from '../types/index.js';
+import { ClauseService } from '../services/clause.service';
+import { ApiResponse } from '../types/index';
 
 export class ClauseController {
   private clauseService: ClauseService;

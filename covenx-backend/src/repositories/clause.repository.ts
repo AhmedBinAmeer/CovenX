@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository.js';
-import { ClauseModel, IClause } from '../models/Clause.model.js';
+import { BaseRepository } from './base.repository';
+import { ClauseModel, IClause } from '../models/Clause.model';
 
 export class ClauseRepository extends BaseRepository<IClause> {
   constructor() {

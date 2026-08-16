@@ -83,7 +83,7 @@ export const ContractDetail: React.FC = () => {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Back button & Header */}
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate('/contracts')} className="flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:text-slate-400">
+        <button onClick={() => navigate('/contracts')} className="flex items-center gap-1 text-xs font-semibold text-navy-400 hover:text-navy-600 dark:text-slate-400 dark:hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Repository
         </button>
 
@@ -106,7 +106,7 @@ export const ContractDetail: React.FC = () => {
               <RiskBadge category={contract.riskCategory} score={contract.riskScore} />
             </div>
             <p className="text-xs font-mono text-gray-500 dark:text-slate-400 mt-1">
-              Number: <span className="font-bold text-brand-600 dark:text-brand-400">{contract.contractNumber}</span> | Version: v{contract.version} | Type: {contract.type}
+              Number: <span className="font-bold text-navy-600 dark:text-navy-300">{contract.contractNumber}</span> | Version: v{contract.version} | Type: {contract.type}
             </p>
           </div>
 
@@ -134,8 +134,8 @@ export const ContractDetail: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg transition-colors border-b-2 ${
                   isActive
-                    ? 'border-brand-500 text-brand-600 dark:text-brand-400 bg-brand-500/5 font-bold'
-                    : 'border-transparent text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white'
+                    ? 'border-ember-500 text-ember-600 dark:text-ember-400 bg-ember-500/5 font-bold'
+                    : 'border-transparent text-gray-500 hover:text-navy-600 dark:text-slate-400 dark:hover:text-white'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" /> {tab.label}

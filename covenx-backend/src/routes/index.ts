@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import authRoutes from './auth.routes.js';
-import contractRoutes from './contract.routes.js';
-import analyticsRoutes from './analytics.routes.js';
-import templateRoutes from './template.routes.js';
-import clauseRoutes from './clause.routes.js';
-import auditRoutes from './audit.routes.js';
+import authRoutes from './auth.routes';
+import contractRoutes from './contract.routes';
+import analyticsRoutes from './analytics.routes';
+import templateRoutes from './template.routes';
+import clauseRoutes from './clause.routes';
+import auditRoutes from './audit.routes';
 
 const apiRouter = Router();
 

@@ -1,15 +1,15 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
-import { config } from './config/env.js';
-import { connectDB } from './config/db.js';
-import { initRedis } from './config/redis.js';
-import apiRouter from './routes/index.js';
-import { errorHandler } from './middleware/error.middleware.js';
-import { ApiResponse } from './types/index.js';
-import { TemplateModel } from './models/Template.model.js';
-import { ClauseModel } from './models/Clause.model.js';
+import { config } from './config/env';
+import { connectDB } from './config/db';
+import { initRedis } from './config/redis';
+import apiRouter from './routes/index';
+import { errorHandler } from './middleware/error.middleware';
+import { ApiResponse } from './types/index';
+import { TemplateModel } from './models/Template.model';
+import { ClauseModel } from './models/Clause.model';
 
 const app = express();
 const server = http.createServer(app);
@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response, next: NextFunction): void => {
   const response: ApiResponse = {
     success: true,
     data: { status: 'OK', system: 'CovenX Enterprise CLM', timestamp: new Date().toISOString() },

@@ -1,5 +1,5 @@
-import { AuditRepository } from '../repositories/audit.repository.js';
-import { IAuditLog } from '../models/AuditLog.model.js';
+import { AuditRepository } from '../repositories/audit.repository';
+import { IAuditLog } from '../models/AuditLog.model';
 
 export class AuditService {
   private auditRepository: AuditRepository;

@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { UserRepository } from '../repositories/user.repository.js';
-import { IUser, UserRole } from '../models/User.model.js';
-import { config } from '../config/env.js';
+import { UserRepository } from '../repositories/user.repository';
+import { IUser, UserRole } from '../models/User.model';
+import { config } from '../config/env';
 
 export class AuthService {
   private userRepository: UserRepository;

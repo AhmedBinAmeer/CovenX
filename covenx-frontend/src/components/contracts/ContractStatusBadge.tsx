@@ -8,11 +8,11 @@ interface StatusBadgeProps {
 export const ContractStatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   const styles: Record<string, string> = {
     DRAFT: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700',
-    PENDING_REVIEW: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-    APPROVED: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-    EXECUTED: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    PENDING_REVIEW: 'bg-ember-500/10 text-ember-600 dark:text-ember-400 border-ember-500/20',
+    APPROVED: 'bg-navy-500/10 text-navy-600 dark:text-navy-300 border-navy-500/20',
+    EXECUTED: 'bg-forest-500/10 text-forest-600 dark:text-forest-400 border-forest-500/20',
     TERMINATED: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
-    EXPIRED: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+    EXPIRED: 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-500/20',
   };
 
   const currentStyle = styles[status] || styles.DRAFT;

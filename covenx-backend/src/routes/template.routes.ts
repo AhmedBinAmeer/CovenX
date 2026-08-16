@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { TemplateController } from '../controllers/template.controller.js';
-import { authenticateJWT } from '../middleware/auth.middleware.js';
+import { TemplateController } from '../controllers/template.controller';
+import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 const templateController = new TemplateController();

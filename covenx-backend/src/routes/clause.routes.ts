@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { ClauseController } from '../controllers/clause.controller.js';
-import { authenticateJWT } from '../middleware/auth.middleware.js';
+import { ClauseController } from '../controllers/clause.controller';
+import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 const clauseController = new ClauseController();

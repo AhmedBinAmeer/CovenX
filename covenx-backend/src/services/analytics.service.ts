@@ -1,6 +1,6 @@
-import { ContractRepository } from '../repositories/contract.repository.js';
-import { AuditRepository } from '../repositories/audit.repository.js';
-import { getRedisClient } from '../config/redis.js';
+import { ContractRepository } from '../repositories/contract.repository';
+import { AuditRepository } from '../repositories/audit.repository';
+import { getRedisClient } from '../config/redis';
 
 export class AnalyticsService {
   private contractRepository: ContractRepository;
@@ -32,7 +32,7 @@ export class AnalyticsService {
 
     if (redis && redis.isOpen) {
       try {
-        await redis.setEx(cacheKey, 60, JSON.stringify(result)); // 60 seconds TTL cache
+        await redis.setEx(cacheKey, 60, JSON.stringify(result));
       } catch (err) {
         console.warn('[Redis] Cache write error');
       }

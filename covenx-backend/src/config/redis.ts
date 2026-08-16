@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
-import { config } from './env.js';
+import { config } from './env';
 
 let redisClient: RedisClientType | null = null;
 
@@ -13,7 +13,7 @@ export const initRedis = async (): Promise<RedisClientType | null> => {
     await redisClient.connect();
     return redisClient;
   } catch (error) {
-    console.warn('[Redis Warning] Redis connection failed, running without cache:', error);
+    console.warn('[Redis Warning] Running without active Redis cache (fallback enabled)');
     return null;
   }
 };

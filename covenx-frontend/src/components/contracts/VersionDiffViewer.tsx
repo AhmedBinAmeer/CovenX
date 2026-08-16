@@ -15,7 +15,7 @@ export const VersionDiffViewer: React.FC<VersionDiffViewerProps> = ({ history })
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-          <GitCompare className="w-4 h-4 text-brand-500" /> Revision History & Diff Inspection
+          <GitCompare className="w-4 h-4 text-navy-500" /> Revision History & Diff Inspection
         </h3>
 
         <div className="flex items-center gap-2">
@@ -37,7 +37,7 @@ export const VersionDiffViewer: React.FC<VersionDiffViewerProps> = ({ history })
       {selectedRecord && (
         <div className="bg-white dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-xs border-b border-gray-100 dark:border-slate-700 pb-2">
-            <span className="font-semibold text-brand-600 dark:text-brand-400">Revision Version {selectedRecord.version}</span>
+            <span className="font-semibold text-navy-600 dark:text-navy-300">Revision Version {selectedRecord.version}</span>
             <span className="text-gray-500 dark:text-slate-400">
               Updated by {selectedRecord.updatedBy} on {new Date(selectedRecord.updatedAt).toLocaleString()}
             </span>

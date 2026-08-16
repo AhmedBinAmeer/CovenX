@@ -17,7 +17,7 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({ signatures, onSi
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-          <FileSignature className="w-4 h-4 text-brand-500" /> Digital Signatures & Non-Repudiation Audit
+          <FileSignature className="w-4 h-4 text-ember-500" /> Digital Signatures & Non-Repudiation Audit
         </h3>
       </div>
 
