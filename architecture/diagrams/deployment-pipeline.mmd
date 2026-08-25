@@ -1,0 +1,6 @@
+flowchart LR
+    DEV[Development\nDocker Compose\nLocal MongoDB + Redis]
+    TEST[Testing\nIsolated stack\nAutomated tests + security checks]
+    STAGE[Staging\nProduction-like topology\nSynthetic data + release validation]
+    PROD[Production\nPrivate network\nLoad-balanced replicas\nBackups + monitoring]
+    DEV --> TEST --> STAGE --> PROD

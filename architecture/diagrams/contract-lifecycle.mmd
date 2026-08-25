@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Review: submit for review
+    Review --> Draft: return for edits
+    Review --> Approval: review accepted
+    Approval --> Review: changes requested
+    Approval --> Draft: rejected / rework
+    Approval --> Signature: all approvals complete
+    Signature --> Approval: signature issue / correction
+    Signature --> Active: signing complete
+    Active --> Monitoring: activate obligations
+    Monitoring --> Renewal: renewal window reached
+    Monitoring --> Archive: terminated or expired
+    Renewal --> Review: renewal draft created
+    Renewal --> Active: renewal approved and signed
+    Renewal --> Archive: renewal declined
+    Archive --> [*]

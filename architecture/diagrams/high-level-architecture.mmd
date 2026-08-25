@@ -1,0 +1,32 @@
+flowchart TB
+    U[Users\nLegal • Finance • Managers • Executives • Vendors]
+    FE[React 19 Frontend\nFeature modules • Forms • Dashboards]
+    API[REST API Layer\nExpress • Validation • Rate limits]
+    AUTH[Authentication & Authorization\nJWT • Refresh tokens • RBAC]
+    SVC[Backend Services\nContracts • Authoring • Workflow • Signatures\nObligations • Documents • Notifications • Audit]
+    EVT[Domain Events & Queue Producers]
+    DB[(MongoDB\nOperational collections)]
+    REDIS[(Redis\nCache • Locks • Queue broker)]
+    WORK[Queue Workers\nReminders • Email • Processing • Reporting]
+    OBJ[(Private Object Storage\nEncrypted documents)]
+    IO[Socket.IO Gateway\nAuthenticated real-time events]
+    MAIL[Email Provider]
+    OBS[Observability\nLogs • Metrics • Traces • Alerts]
+
+    U --> FE
+    FE --> API
+    FE <-->|Live updates| IO
+    API --> AUTH
+    API --> SVC
+    SVC --> DB
+    SVC --> OBJ
+    SVC --> EVT
+    EVT --> REDIS
+    REDIS --> WORK
+    WORK --> DB
+    WORK --> OBJ
+    WORK --> MAIL
+    IO --> REDIS
+    API --> OBS
+    SVC --> OBS
+    WORK --> OBS
