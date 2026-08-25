@@ -10,6 +10,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sidebar { width: 256px; background: #0a1f33; color: #d8e4ee; display: flex; flex-direction: column; padding: 24px 16px; position: fixed; inset: 0 auto 0 0; z-index: 10; }
 .main-panel { margin-left: 256px; flex: 1; min-width: 0; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 12px 28px; color: #fff; }
+.brand-logo { display: block; width: 154px; height: 58px; object-fit: contain; object-position: center; border-radius: 10px; background: #fff; }
+.brand-logo-login { width: 205px; height: 84px; border-radius: 12px; }
 .brand-mark { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #1d9365, #ef8437); display: grid; place-items: center; color: #fff; font-family: 'Space Grotesk'; font-weight: 700; }
 .brand-name { font-family: 'Space Grotesk'; font-size: 18px; font-weight: 700; letter-spacing: -.03em; }
 .nav-group { display: grid; gap: 5px; }
@@ -74,4 +76,4 @@ td strong { color: #173149; font-weight: 700; }
 .notice { padding: 12px 14px; border-radius: 10px; background: #fff7ed; color: #92511e; font-size: 12px; line-height: 1.5; }
 .empty { text-align: center; padding: 50px 20px; color: #7e919f; font-size: 13px; }
 @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .grid-2, .two-column { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .sidebar { width: 70px; padding: 18px 10px; } .brand { padding: 0 9px 24px; } .brand-name, .nav-label, .nav-item span, .sidebar-footer { display: none; } .nav-item { justify-content: center; padding: 11px 0; } .main-panel { margin-left: 70px; } .topbar { padding: 0 18px; } .content { padding: 24px 16px 36px; } .page-heading { align-items: flex-start; flex-direction: column; } .kpi-grid { gap: 10px; } .kpi-card { padding: 15px; } .kpi-value { font-size: 23px; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } }
+@media (max-width: 760px) { .sidebar { width: 70px; padding: 18px 10px; } .brand { padding: 0 9px 24px; } .brand-logo { width: 50px; height: 50px; border-radius: 8px; } .brand-name, .nav-label, .nav-item span, .sidebar-footer { display: none; } .nav-item { justify-content: center; padding: 11px 0; } .main-panel { margin-left: 70px; } .topbar { padding: 0 18px; } .content { padding: 24px 16px 36px; } .page-heading { align-items: flex-start; flex-direction: column; } .kpi-grid { gap: 10px; } .kpi-card { padding: 15px; } .kpi-value { font-size: 23px; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } }

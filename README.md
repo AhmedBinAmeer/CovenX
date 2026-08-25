@@ -1,5 +1,7 @@
 # CovenX Enterprise Contract Lifecycle Management Platform
 
+<p align="center"><img src="frontend/public/covenx-logo.png" alt="CovenX Enterprise Contract Lifecycle Management Platform" width="220" /></p>
+
 CovenX is an enterprise SaaS platform for intelligent contract operations, secure document management, compliance monitoring, and AI-assisted contract intelligence.
 
 The platform supports the complete contract lifecycle:
