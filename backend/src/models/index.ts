@@ -33,4 +33,13 @@ export const ApprovalTask = model('ApprovalTask', new Schema({ ...base, contract
 ApprovalTask.schema.index({ tenantId: 1, assignedUserId: 1, status: 1, dueAt: 1 });
 ApprovalTask.schema.index({ tenantId: 1, contractId: 1, status: 1 });
 
+export const SignatureRequest = model('SignatureRequest', new Schema({ ...base, contractId: { type: Schema.Types.ObjectId, ref: 'Contract', required: true }, contractVersionId: Schema.Types.ObjectId, provider: { type: String, required: true }, status: { type: String, enum: ['requested', 'in_progress', 'completed', 'declined', 'expired', 'cancelled'], default: 'requested' }, signers: [Schema.Types.Mixed], expiresAt: Date, createdBy: Schema.Types.ObjectId, completedAt: Date, evidenceRefs: [Schema.Types.Mixed], auditMetadata: Schema.Types.Mixed }, { timestamps: true }));
+SignatureRequest.schema.index({ tenantId: 1, contractId: 1, status: 1 });
+export const SignatureParticipant = model('SignatureParticipant', new Schema({ ...base, signatureRequestId: { type: Schema.Types.ObjectId, ref: 'SignatureRequest', required: true }, userId: Schema.Types.ObjectId, vendorIdentity: Schema.Types.Mixed, signingOrder: { type: Number, required: true }, status: { type: String, enum: ['pending', 'signed', 'declined'], default: 'pending' }, signedAt: Date, declineReason: String, evidenceRefs: [Schema.Types.Mixed] }, { timestamps: true }));
+SignatureParticipant.schema.index({ tenantId: 1, signatureRequestId: 1, signingOrder: 1 });
+export const Obligation = model('Obligation', new Schema({ ...base, contractId: { type: Schema.Types.ObjectId, ref: 'Contract', required: true }, ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, type: { type: String, required: true }, title: { type: String, required: true }, description: String, priority: { type: String, enum: ['low', 'medium', 'high', 'critical'], default: 'medium' }, dueDate: { type: Date, required: true }, recurrence: Schema.Types.Mixed, status: { type: String, enum: ['open', 'in_progress', 'completed', 'overdue', 'cancelled'], default: 'open' }, escalationPolicy: Schema.Types.Mixed, completionData: Schema.Types.Mixed, evidenceDocuments: [Schema.Types.Mixed], version: { type: Number, default: 1 } }, { timestamps: true }));
+Obligation.schema.index({ tenantId: 1, dueDate: 1, status: 1 });
+Obligation.schema.index({ tenantId: 1, ownerId: 1, status: 1 });
+Obligation.schema.index({ tenantId: 1, contractId: 1, status: 1 });
+
 export function asId(value: string): mongoose.Types.ObjectId { return new mongoose.Types.ObjectId(value); }
