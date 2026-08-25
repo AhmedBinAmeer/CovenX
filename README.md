@@ -79,6 +79,37 @@ Node.js + Express 5 + TypeScript
 
 The detailed architecture is documented in [`docs/Architecture.md`](docs/Architecture.md). Database collections, indexes, scaling design, retention, and security are documented in [`docs/Database.md`](docs/Database.md).
 
+## Technology stack
+
+<p align="center">
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1F33" alt="React 19" /></a>
+  <a href="https://vite.dev/"><img src="https://img.shields.io/badge/Vite-7-646CFF?style=for-the-badge&logo=vite&logoColor=FFFFFF" alt="Vite 7" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=FFFFFF" alt="TypeScript 5.9" /></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=FFFFFF" alt="Node.js 20 or newer" /></a>
+</p>
+<p align="center">
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express&logoColor=FFFFFF" alt="Express 5" /></a>
+  <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-7-47A248?style=for-the-badge&logo=mongodb&logoColor=FFFFFF" alt="MongoDB 7" /></a>
+  <a href="https://redis.io/"><img src="https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=FFFFFF" alt="Redis 7" /></a>
+  <a href="https://socket.io/"><img src="https://img.shields.io/badge/Socket.IO-4-010101?style=for-the-badge&logo=socket.io&logoColor=FFFFFF" alt="Socket.IO 4" /></a>
+</p>
+<p align="center">
+  <a href="https://zod.dev/"><img src="https://img.shields.io/badge/Zod-Validation-3E67B1?style=for-the-badge&logo=zod&logoColor=FFFFFF" alt="Zod validation" /></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Local%20Services-2496ED?style=for-the-badge&logo=docker&logoColor=FFFFFF" alt="Docker" /></a>
+  <a href="https://github.com/features/actions"><img src="https://img.shields.io/badge/GitHub%20Actions-Quality%20Gates-2088FF?style=for-the-badge&logo=github-actions&logoColor=FFFFFF" alt="GitHub Actions" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Vitest-Test%20Suite-6E9F18?style=for-the-badge&logo=vitest&logoColor=FFFFFF" alt="Vitest" /></a>
+</p>
+
+### Stack at a glance
+
+| Domain | Selected technologies |
+|---|---|
+| User experience | React 19, Vite 7, TypeScript, Lucide icons, Recharts, responsive CSS motion system, and accessible reduced-motion support. |
+| API and application services | Node.js 20+, Express 5, TypeScript, Zod, JWT, bcryptjs, Helmet, CORS, and structured middleware. |
+| Data and coordination | MongoDB 7 with Mongoose, Redis 7 with ioredis, indexed tenant-aware queries, sessions, rate limiting, and coordination. |
+| Realtime and files | Socket.IO 4, AWS SDK for S3-compatible storage, presigned URLs, checksums, scan state, and secure document boundaries. |
+| Engineering quality | Vitest, Supertest, ESLint, TypeScript project checks, npm workspaces, Docker Compose, and GitHub Actions. |
+
 ## Repository structure
 
 ```text
