@@ -4,7 +4,6 @@ import { endpoints, setAccessToken } from './services/api';
 import { connectRealtime } from './services/realtime';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
 import { Contracts } from './pages/Contracts';
 import { Approvals } from './pages/Approvals';
 import { Obligations } from './pages/Obligations';
