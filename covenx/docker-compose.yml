@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: covenx-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - covenx-mongodb-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: covenx-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - covenx-redis-data:/data
+
+volumes:
+  covenx-mongodb-data:
+  covenx-redis-data:

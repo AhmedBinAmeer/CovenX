@@ -1,0 +1,23 @@
+name: CovenX foundation CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  foundation-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify repository foundation
+        run: |
+          test -f README.md
+          test -f .env.example
+          test -f docker-compose.yml
+          test -f backend/app.ts
+          test -d frontend
+          test -d database
+          test -d docs
+          echo "CovenX enterprise foundation verified."

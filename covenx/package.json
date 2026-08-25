@@ -1,0 +1,17 @@
+{
+  "name": "covenx-enterprise-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CovenX Enterprise Contract Lifecycle Management Platform",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "test": "echo \"Tests will be added during feature development.\"",
+    "lint": "echo \"Linting will be configured during feature development.\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
