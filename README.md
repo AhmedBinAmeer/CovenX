@@ -8,7 +8,7 @@ The platform is designed around the complete contract lifecycle:
 
 ## Repository status
 
-This repository currently contains the **enterprise monorepo foundation only**. Application features, APIs, database models, and UI screens are intentionally excluded from this initialization phase.
+This repository contains the enterprise monorepo foundation and the first backend implementation phase. The backend foundation now includes configuration loading, MongoDB and Redis boundaries, Express middleware, JWT authentication, refresh-token rotation, RBAC seed definitions, user and role management, audit writes, and contract/version lifecycle foundations. Broader application features remain under active development.
 
 ## Monorepo layout
 
@@ -41,4 +41,4 @@ Feature branches such as `feature/authentication`, `feature/contracts`, `feature
 
 ## Local setup
 
-Install Node.js 20 or newer, review `.env.example`, and start the local MongoDB and Redis services with `docker compose up -d`. Feature-specific installation and run instructions will be added with the first development phase.
+Install Node.js 20 or newer, run `npm install`, review `.env.example`, and start local MongoDB and Redis services with `docker compose up -d`. Use `npm run build` to compile the backend and `npm test` to run the backend API foundation tests. Set `SEED_RBAC=true` only in a controlled local environment when baseline roles and permissions should be seeded.

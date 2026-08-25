@@ -8,8 +8,9 @@
     "backend"
   ],
   "scripts": {
-    "test": "echo \"Tests will be added during feature development.\"",
-    "lint": "echo \"Linting will be configured during feature development.\""
+    "build": "npm run build --workspace=@covenx/backend",
+    "test": "npm run test --workspace=@covenx/backend",
+    "lint": "npm run build --workspace=@covenx/backend"
   },
   "engines": {
     "node": ">=20"
