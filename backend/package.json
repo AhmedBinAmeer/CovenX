@@ -7,6 +7,7 @@
     "dev": "tsx watch app.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/app.js",
+    "verify-indexes": "tsx -e \"import { connectInfrastructure } from './src/config/connections.ts'; import { verifyIndexes } from './src/config/indexes.ts'; await connectInfrastructure(); await verifyIndexes(); process.exit(0);\"",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
