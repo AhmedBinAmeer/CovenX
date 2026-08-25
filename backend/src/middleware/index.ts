@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodType } from 'zod';
 import { verifyAccess, AuthContext } from '../services/auth.js';
+import { redis } from '../config/connections.js';
 
 declare global { namespace Express { interface Request { auth?: AuthContext; requestId?: string } } }
 const rateBuckets = new Map<string, { count: number; resetAt: number }>();
 export function rateLimit(windowMs = 60_000, max = 120) { return (req: Request, res: Response, next: NextFunction) => { const key = `${req.ip}:${req.path}`; const now = Date.now(); const bucket = rateBuckets.get(key); if (!bucket || bucket.resetAt <= now) rateBuckets.set(key, { count: 1, resetAt: now + windowMs }); else if (++bucket.count > max) return res.status(429).json({ success: false, error: { code: 'RATE_LIMITED', message: 'Too many requests' }, meta: { requestId: req.requestId } }); next(); }; }
 
+export function distributedRateLimit(scope: string, windowMs = 60_000, max = 120) { return async (req: Request, res: Response, next: NextFunction) => { const key = `ratelimit:${scope}:${req.auth?.userId ?? req.ip}`; try { if ((redis as any).status === 'ready') { const count = await redis.incr(key); if (count === 1) await redis.pexpire(key, windowMs); if (count > max) return res.status(429).json({ success: false, error: { code: 'RATE_LIMITED', message: 'Too many requests' }, meta: { requestId: req.requestId } }); } next(); } catch { next(); } }; }
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   try { const token = req.headers.authorization?.replace(/^Bearer\s+/i, ''); if (!token) throw new Error(); req.auth = verifyAccess(token); next(); }
   catch { res.status(401).json({ success: false, error: { code: 'AUTHENTICATION_REQUIRED', message: 'Authentication is required' }, meta: { requestId: req.requestId } }); }
