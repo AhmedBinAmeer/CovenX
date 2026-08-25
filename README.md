@@ -33,7 +33,7 @@ CovenX is organized as a modular monolith with Clean Architecture boundaries. Th
 
 MongoDB is the durable operational store, Redis provides caching and queue coordination, Socket.IO provides authenticated real-time freshness signals, queue workers handle asynchronous work, and private object storage holds encrypted document binaries. JWT authentication, refresh-token rotation, RBAC, scoped permissions, input validation, secure file handling, and append-only audit logging are cross-cutting controls.
 
-The complete System Architecture Document is available at [`docs/Architecture.md`](docs/Architecture.md). Supporting visual assets are in [`architecture/diagrams/`](architecture/diagrams/), and architecture decisions are recorded in [`architecture/decisions/`](architecture/decisions/).
+The complete System Architecture Document is available at [`docs/Architecture.md`](docs/Architecture.md), and the MongoDB and Redis Database Design Document is available at [`docs/Database.md`](docs/Database.md). Supporting visual assets are in [`architecture/diagrams/`](architecture/diagrams/), and architecture decisions are recorded in [`architecture/decisions/`](architecture/decisions/).
 
 ## Branching model
 
