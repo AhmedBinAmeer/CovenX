@@ -10,6 +10,17 @@ export async function connectInfrastructure(): Promise<void> {
 }
 
 export async function disconnectInfrastructure(): Promise<void> {
-  await mongoose.disconnect();
   if ((redis as any).status !== 'end') await redis.quit();
+  await mongoose.disconnect();
+}
+
+export async function withTransaction<T>(work: (session: mongoose.ClientSession) => Promise<T>): Promise<T> {
+  const session = await mongoose.startSession();
+  try {
+    let result!: T;
+    await session.withTransaction(async () => { result = await work(session); });
+    return result;
+  } finally {
+    await session.endSession();
+  }
 }
