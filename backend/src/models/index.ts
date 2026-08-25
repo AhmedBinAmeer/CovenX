@@ -42,4 +42,11 @@ Obligation.schema.index({ tenantId: 1, dueDate: 1, status: 1 });
 Obligation.schema.index({ tenantId: 1, ownerId: 1, status: 1 });
 Obligation.schema.index({ tenantId: 1, contractId: 1, status: 1 });
 
+export const Document = model('Document', new Schema({ ...base, contractId: { type: Schema.Types.ObjectId, ref: 'Contract', required: true }, contractVersionId: Schema.Types.ObjectId, obligationId: Schema.Types.ObjectId, documentType: { type: String, required: true }, fileName: { type: String, required: true }, originalFileName: { type: String, required: true }, mimeType: { type: String, required: true }, sizeBytes: { type: Number, required: true }, checksum: { type: String, required: true }, classification: { type: String, enum: ['public', 'internal', 'confidential', 'restricted'], default: 'confidential' }, storageProvider: { type: String, required: true }, storageKey: { type: String, required: true, select: false }, uploadStatus: { type: String, enum: ['pending', 'uploaded', 'failed', 'quarantined', 'deleted'], default: 'pending' }, scanStatus: { type: String, enum: ['pending', 'clean', 'infected', 'failed'], default: 'pending' }, version: { type: Number, default: 1 }, uploadedBy: Schema.Types.ObjectId, scanMetadata: Schema.Types.Mixed }, { timestamps: true }));
+Document.schema.index({ tenantId: 1, contractId: 1, createdAt: -1 });
+Document.schema.index({ tenantId: 1, contractVersionId: 1, uploadStatus: 1, scanStatus: 1 });
+Document.schema.index({ tenantId: 1, checksum: 1 });
+export const DocumentVersion = model('DocumentVersion', new Schema({ ...base, documentId: { type: Schema.Types.ObjectId, ref: 'Document', required: true }, version: { type: Number, required: true }, checksum: { type: String, required: true }, storageProvider: String, storageKey: { type: String, required: true, select: false }, uploadedBy: Schema.Types.ObjectId, createdAt: { type: Date, default: Date.now } }, { timestamps: false }));
+DocumentVersion.schema.index({ documentId: 1, version: 1 }, { unique: true });
+
 export function asId(value: string): mongoose.Types.ObjectId { return new mongoose.Types.ObjectId(value); }
