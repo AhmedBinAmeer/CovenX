@@ -10,6 +10,7 @@ flowchart TB
     WORK[Queue Workers\nReminders • Email • Processing • Reporting]
     OBJ[(Private Object Storage\nEncrypted documents)]
     IO[Socket.IO Gateway\nAuthenticated real-time events]
+    EXT[External Integrations\nEmail • E-Signature • OCR • Search]
     MAIL[Email Provider]
     OBS[Observability\nLogs • Metrics • Traces • Alerts]
 
@@ -25,7 +26,8 @@ flowchart TB
     REDIS --> WORK
     WORK --> DB
     WORK --> OBJ
-    WORK --> MAIL
+    WORK --> EXT
+    EXT --> MAIL
     IO --> REDIS
     API --> OBS
     SVC --> OBS

@@ -67,6 +67,7 @@ flowchart TB
     WORK[Queue Workers\nReminders • Email • Processing • Reporting]
     OBJ[(Private Object Storage\nEncrypted documents)]
     IO[Socket.IO Gateway\nAuthenticated real-time events]
+    EXT[External Integrations\nEmail • E-Signature • OCR • Search]
     MAIL[Email Provider]
     OBS[Observability\nLogs • Metrics • Traces • Alerts]
 
@@ -82,7 +83,8 @@ flowchart TB
     REDIS --> WORK
     WORK --> DB
     WORK --> OBJ
-    WORK --> MAIL
+    WORK --> EXT
+    EXT --> MAIL
     IO --> REDIS
     API --> OBS
     SVC --> OBS
@@ -91,7 +93,8 @@ flowchart TB
 
 ### 2.2 Request and data boundaries
 
-The frontend never connects directly to MongoDB, Redis, object storage credentials, or the email provider. It calls the REST API using an access token and receives resource representations shaped for the current user’s permissions. Document uploads use a controlled upload-initiation API that returns a short-lived, scoped object-storage upload capability; finalization is performed through the API so metadata, virus-scanning status, ownership, and audit records remain authoritative.
+The frontend never connects directly to MongoDB, Redis, object storage credentials, or external integration providers.
+It calls the REST API using an access token and receives resource representations shaped for the current user’s permissions. Document uploads use a controlled upload-initiation API that returns a short-lived, scoped object-storage upload capability; finalization is performed through the API so metadata, virus-scanning status, ownership, and audit records remain authoritative.
 
 The API and workers are stateless at the process level. Durable state lives in MongoDB and object storage, while Redis contains recoverable or expiring coordination state. Domain events are persisted or made recoverable at the transactional boundary through an outbox-style event record before asynchronous publication. This prevents a contract mutation from committing without its downstream notification or audit intent being recorded.
 
@@ -281,7 +284,22 @@ examples:
 
 Authorization is evaluated at the API boundary and again inside the service before the sensitive mutation. A role is not itself a guarantee of access: the user must have the permission and the requested resource must satisfy scope rules. Vendor users are isolated to explicitly shared contracts and documents. Executive dashboards use aggregate permissions and must not become a side channel for unauthorized contract detail.
 
-### 6.3 Session handling
+### 6.3 Enterprise role model
+
+The initial role catalogue is deliberately explicit so product permissions and test matrices can be built against stable responsibilities:
+
+| Role | Primary responsibilities | Default access posture |
+|---|---|---|
+| **Super Admin** | Tenant configuration, user and role administration, workflow configuration, platform operations, and controlled audit access | Tenant-wide administration with separation-of-duties safeguards |
+| **Legal Officer** | Contract review, clause governance, legal risk assessment, approval participation, and compliance monitoring | Read and manage contracts within assigned business scope; approve legal tasks |
+| **Department Manager** | Contract requests, department metadata, business approvals, and department obligation oversight | Department-scoped contract and workflow access |
+| **Finance Reviewer** | Financial term validation, payment obligation review, value analytics, and finance approvals | Finance-scoped fields and assigned approval tasks |
+| **Executive Approver** | Strategic approval decisions and aggregate executive insights | Assigned executive approvals and authorized aggregate reporting |
+| **Vendor User** | Secure collaboration on explicitly shared contracts, documents, and signature tasks | Explicit-share scope only; no tenant-wide search or administrative access |
+
+Roles are permission bundles, not hard-coded bypasses. A user must satisfy the atomic permission and resource scope for each action. Temporary delegation and escalation preserve the original task, actor, reason, and expiry in the audit trail.
+
+### 6.4 Session handling
 
 Each session has a device or client label, creation time, last-used time, expiry, revocation state, and authentication version. Administrative revocation increments the user’s authentication version or revokes all session records. Redis may accelerate revocation checks, but MongoDB remains the durable source for session evidence. Authentication and authorization decisions emit audit events without recording secrets.
 
@@ -323,6 +341,12 @@ stateDiagram-v2
 | Archive | Contract is inactive and retained according to policy | Terminal | Archive reason, retention class, final audit event |
 
 Every transition is validated against the current state, actor permission, required fields, outstanding tasks, and concurrency token. Rejected transitions return a typed business error and do not partially mutate the contract. Automatic transitions, such as entering a renewal window, run through the same transition service as user actions and identify the scheduler as the initiating actor.
+
+### 7.3 Approval routing, escalation, and rejection
+
+Approval routing is selected from a versioned workflow definition using contract type, business unit, department, value thresholds, risk classification, and required review domains. A typical route assigns legal review first, then finance review when financial terms or value thresholds apply, followed by department or executive approval according to policy. Parallel steps are supported where policy permits, but the workflow engine records the completion condition explicitly.
+
+Each approval task has an assignee or role-based assignment, due date, SLA, decision state, comments, and delegation policy. A scheduled worker emits reminders before the due date and escalates overdue tasks to the configured supervisor or alternate queue. Escalation never erases the original assignment or deadline. A rejection records the decision reason, returns the contract to Draft or Review according to workflow policy, and requires a new version or explicit rework acknowledgement before resubmission. Approval completion is concurrency-safe and cannot be applied twice.
 
 ## 8. Notification Architecture
 
