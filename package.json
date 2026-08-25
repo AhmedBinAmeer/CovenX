@@ -3,16 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "description": "CovenX Enterprise Contract Lifecycle Management Platform",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "workspaces": ["frontend", "backend"],
   "scripts": {
-    "build": "npm run build --workspace=@covenx/backend",
-    "test": "npm run test --workspace=@covenx/backend",
-    "lint": "npm run build --workspace=@covenx/backend"
+    "dev": "concurrently -k \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=@covenx/backend",
+    "dev:frontend": "npm run dev --workspace=@covenx/frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "npm run build --workspace=@covenx/backend",
+    "build:frontend": "npm run build --workspace=@covenx/frontend",
+    "typecheck": "npm run typecheck:backend && npm run typecheck:frontend",
+    "typecheck:backend": "tsc -p backend/tsconfig.json --noEmit",
+    "typecheck:frontend": "tsc -p frontend/tsconfig.json --noEmit",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm run test --workspace=@covenx/backend",
+    "test:frontend": "npm run test --workspace=@covenx/frontend",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "eslint backend/src backend/tests",
+    "lint:frontend": "eslint frontend/src",
+    "format:check": "prettier --check .",
+    "verify:indexes": "npm run verify-indexes --workspace=@covenx/backend"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.42.0"
+  },
+  "engines": { "node": ">=20" }
 }

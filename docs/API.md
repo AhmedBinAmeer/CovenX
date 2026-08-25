@@ -2,11 +2,11 @@
 
 ## REST API Specification
 
-**Status:** API contract baseline for review
+**Status:** Implemented REST API contract
 **Version:** 1.0
 **Base URL:** `/api/v1`
 **Transport:** HTTPS and JSON over REST; Socket.IO for authenticated real-time notifications
-**Scope:** API behavior and contracts only. Backend implementation is intentionally out of scope.
+**Scope:** Implemented API behavior and client integration contract for the CovenX Enterprise Contract Lifecycle Management Platform.
 
 > CovenX APIs expose secure, auditable contract lifecycle operations while keeping authorization, tenant isolation, validation, and lifecycle rules on the server.
 
@@ -171,7 +171,7 @@ Authentication endpoints establish and maintain the user session. Login and refr
 
 **Request:** Empty body or provider-specific refresh context; refresh token is not accepted in JSON by default.
 
-**Response:** `200` with `{ accessToken, expiresAt, session }` and a rotated refresh cookie.
+**Response:** `200` with `{ accessToken, sessionId, rotated }` and a rotated refresh cookie.
 
 **Errors:** `TOKEN_INVALID`, `TOKEN_EXPIRED`, `REFRESH_REUSE_DETECTED`, `SESSION_REVOKED`, `ACCOUNT_DEACTIVATED`.
 
@@ -193,7 +193,7 @@ All user administration requires `user:read`, `user:create`, `user:update`, or `
 |---|---|---|---|---|
 | `GET /users` | Search and list users | `q`, `status`, `roleId`, `departmentId`, `businessUnitId`, `limit`, `cursor`, `sort` | `200` user collection | `user:read` |
 | `GET /users/:id` | Retrieve a user | Path ID | `200` safe user resource | `user:read` plus scope |
-| `POST /users` | Invite/create user | `email`, profile, role IDs, organization scope | `201` invitation/user resource | `user:create` |
+| `POST /auth/register` | Invite/create user | `email`, `password`, `firstName`, `lastName`, role IDs, organization scope | `201` user resource | `user:create` |
 | `PATCH /users/:id` | Update profile, role, scope, or status | Allowlisted changed fields and concurrency token | `200` updated user | `user:update` or `user:manage` |
 | `DELETE /users/:id` | Deactivate user | Optional `reason` and `deactivateSessions` | `204` or `200` deactivation result | `user:manage` |
 
@@ -336,7 +336,7 @@ Signing can begin only for the approved version and required approval state. Com
 
 Due-date workers generate deduplicated reminders and escalate overdue obligations according to policy. Errors include `OBLIGATION_NOT_FOUND`, `OWNER_SCOPE_DENIED`, `DUE_DATE_INVALID`, `OBLIGATION_ALREADY_COMPLETED`, and `VERSION_CONFLICT`.
 
-## 11. Document APIs
+## 8. Document APIs
 
 Documents use a controlled upload flow. Binary content is stored in private object storage; MongoDB stores metadata, security state, relationship, checksum, and storage reference.
 
@@ -346,7 +346,7 @@ Documents use a controlled upload flow. Binary content is stored in private obje
 **Authentication:** Required.
 **Permission:** `document:upload` plus contract/version scope.
 
-**Request:** Upload initiation uses `{ contractId, versionId?, documentType, fileName, mimeType, sizeBytes, classification }`. The server validates file policy and returns `202` with `{ documentId, uploadUrl, uploadHeaders, expiresAt, status: "pending" }`. A finalize action confirms the uploaded object and checksum.
+**Request:** Upload initiation uses `{ contractId, versionId?, documentType, fileName, mimeType, sizeBytes, classification }`. The server validates file policy and returns `201` with `{ documentId, uploadUrl, uploadHeaders, expiresAt, status: "pending" }`. A finalize action confirms the uploaded object and checksum.
 
 **Response:** `200` or `202` document metadata with `scanStatus: pending`; it is not downloadable until clean.
 
@@ -354,6 +354,7 @@ Documents use a controlled upload flow. Binary content is stored in private obje
 
 | Method and path | Purpose | Required permission |
 |---|---|---|
+| `GET /documents` | List safe document metadata, optionally filtered by contract, obligation, or scan status | `document:read` |
 | `GET /documents/:id` | Retrieve safe metadata and scan status | `document:read` |
 | `GET /documents/:id/download` | Issue short-lived download URL or stream | `document:download` |
 | `DELETE /documents/:id` | Quarantine or dispose eligible document | `document:delete` or `document:manage` |
@@ -366,7 +367,7 @@ Downloads are audited. Storage keys, credentials, unrestricted object URLs, and 
 |---|---|---|---|---|
 | `GET /notifications` | List current user notifications | `status`, `type`, pagination | `200` notification collection | Authenticated recipient |
 | `PATCH /notifications/:id/read` | Mark notification read | `{ version? }` | `200` notification | Recipient or `notification:manage` |
-| `POST /notifications/preferences` | Set channel and category preferences | `{ categories, channels, quietHours }` | `200` preferences | Authenticated user |
+| `POST /notifications/preferences` | Set channel and category preferences | `{ categories, channels, quietHours, enabled }` | `200` preferences | Authenticated user |
 
 Notification delivery is asynchronous. Queue status, retries, deduplication, and provider errors are not exposed as mutable client controls. Errors include `NOTIFICATION_NOT_FOUND`, `RECIPIENT_SCOPE_DENIED`, and `PREFERENCE_VALIDATION_FAILED`.
 

@@ -1,23 +1,28 @@
-name: CovenX foundation CI
+name: CovenX quality gates
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  foundation-check:
+  quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Verify repository foundation
-        run: |
-          test -f README.md
-          test -f .env.example
-          test -f docker-compose.yml
-          test -f backend/app.ts
-          test -d frontend
-          test -d database
-          test -d docs
-          echo "CovenX enterprise foundation verified."
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Automated tests
+        run: npm run test
+      - name: Production builds
+        run: npm run build
