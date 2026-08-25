@@ -49,4 +49,10 @@ Document.schema.index({ tenantId: 1, checksum: 1 });
 export const DocumentVersion = model('DocumentVersion', new Schema({ ...base, documentId: { type: Schema.Types.ObjectId, ref: 'Document', required: true }, version: { type: Number, required: true }, checksum: { type: String, required: true }, storageProvider: String, storageKey: { type: String, required: true, select: false }, uploadedBy: Schema.Types.ObjectId, createdAt: { type: Date, default: Date.now } }, { timestamps: false }));
 DocumentVersion.schema.index({ documentId: 1, version: 1 }, { unique: true });
 
+export const Notification = model('Notification', new Schema({ ...base, recipientUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, type: { type: String, required: true }, category: { type: String, required: true }, title: { type: String, required: true }, message: { type: String, required: true }, entityType: String, entityId: String, status: { type: String, enum: ['unread', 'read', 'expired'], default: 'unread' }, priority: { type: String, enum: ['low', 'normal', 'high', 'critical'], default: 'normal' }, channels: [{ type: String, enum: ['email', 'in_app', 'realtime'] }], readAt: Date, expiresAt: Date, metadata: Schema.Types.Mixed, version: { type: Number, default: 1 } }, { timestamps: true }));
+Notification.schema.index({ tenantId: 1, recipientUserId: 1, status: 1, createdAt: -1 });
+Notification.schema.index({ tenantId: 1, recipientUserId: 1, type: 1, createdAt: -1 });
+export const NotificationPreference = model('NotificationPreference', new Schema({ ...base, userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, categories: [String], channels: [{ type: String, enum: ['email', 'in_app', 'realtime'] }], quietHours: Schema.Types.Mixed, enabled: { type: Boolean, default: true } }, { timestamps: true }));
+NotificationPreference.schema.index({ tenantId: 1, userId: 1 }, { unique: true });
+
 export function asId(value: string): mongoose.Types.ObjectId { return new mongoose.Types.ObjectId(value); }
