@@ -55,4 +55,7 @@ Notification.schema.index({ tenantId: 1, recipientUserId: 1, type: 1, createdAt:
 export const NotificationPreference = model('NotificationPreference', new Schema({ ...base, userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, categories: [String], channels: [{ type: String, enum: ['email', 'in_app', 'realtime'] }], quietHours: Schema.Types.Mixed, enabled: { type: Boolean, default: true } }, { timestamps: true }));
 NotificationPreference.schema.index({ tenantId: 1, userId: 1 }, { unique: true });
 
+export const DashboardProjection = model('DashboardProjection', new Schema({ ...base, projectionType: { type: String, required: true }, scope: Schema.Types.Mixed, metrics: Schema.Types.Mixed, generatedAt: { type: Date, default: Date.now }, dataAsOf: Date, version: { type: Number, default: 1 } }, { timestamps: true }));
+DashboardProjection.schema.index({ tenantId: 1, projectionType: 1, 'scope.key': 1 }, { unique: true });
+
 export function asId(value: string): mongoose.Types.ObjectId { return new mongoose.Types.ObjectId(value); }

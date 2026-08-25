@@ -1,10 +1,14 @@
 import { ApprovalTask, Contract, Obligation, SignatureParticipant } from '../models/index.js';
 import { claimPendingEvents, markEventFailed, markEventPublished } from './events.js';
-import { createNotification, deliverNotification } from './notifications.js';
+import { createNotification, deliverNotification, realtimeProvider } from './notifications.js';
+import { invalidateDashboardCache, updateDashboardProjection } from './dashboard.js';
 import { findRenewalsDue, emitRenewalDue } from './renewals.js';
 
 export async function handleDomainEvent(event: any) {
   const p = event.payload ?? {};
+  const projectionEvents = ['ContractCreated.v1', 'ContractSubmitted.v1', 'ApprovalCompleted.v1', 'ContractSigned.v1', 'ObligationCreated.v1', 'ObligationCompleted.v1', 'RenewalDue.v1', 'DocumentUploaded.v1'];
+  if (projectionEvents.includes(event.name)) { await invalidateDashboardCache(event.tenantId); await updateDashboardProjection(event.tenantId, 'summary').catch(() => undefined); await realtimeProvider.emitToTenant(event.tenantId, { event: event.name, entityId: event.entityId, contractId: p.contractId }); }
+
   if (event.name === 'ApprovalCreated.v1') { const task: any = await ApprovalTask.findById(event.entityId); if (task?.assignedUserId) { const n = await createNotification({ tenantId: event.tenantId, recipientUserId: task.assignedUserId, type: 'approval_task_created', category: 'approvals', title: 'Approval task assigned', message: 'A contract approval task requires your review.', entityType: 'approvalTask', entityId: String(task._id), actorId: event.actorId, requestId: event.requestId }); if (n) await deliverNotification(n); } }
   if (event.name === 'SignatureCompleted.v1') { const participants: any[] = await SignatureParticipant.find({ signatureRequestId: p.signatureRequestId, status: 'pending' }); for (const participant of participants) { if (participant.userId) { const n = await createNotification({ tenantId: event.tenantId, recipientUserId: participant.userId, type: 'signature_required', category: 'signatures', title: 'Signature required', message: 'A contract is waiting for your signature.', entityType: 'signatureRequest', entityId: String(p.signatureRequestId), actorId: event.actorId, requestId: event.requestId }); if (n) await deliverNotification(n); } } }
   if (event.name === 'ObligationCreated.v1' || event.name === 'RenewalDue.v1') { const userId = p.ownerId ?? event.actorId; if (userId) { const n = await createNotification({ tenantId: event.tenantId, recipientUserId: userId, type: event.name === 'RenewalDue.v1' ? 'renewal_due' : 'obligation_created', category: event.name === 'RenewalDue.v1' ? 'renewals' : 'obligations', title: event.name === 'RenewalDue.v1' ? 'Renewal due' : 'Obligation created', message: event.name === 'RenewalDue.v1' ? 'A contract is approaching expiry.' : 'A new obligation has been assigned.', entityType: event.name === 'RenewalDue.v1' ? 'contract' : 'obligation', entityId: event.entityId, actorId: event.actorId, requestId: event.requestId }); if (n) await deliverNotification(n); } }
