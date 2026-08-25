@@ -1,59 +1,145 @@
 # CovenX Enterprise Contract Lifecycle Management Platform
 
-<p align="center"><img src="frontend/public/covenx-logo.png" alt="CovenX Enterprise Contract Lifecycle Management Platform" width="220" /></p>
+<p align="center">
+  <img src="frontend/public/covenx-logo.png" alt="CovenX Enterprise Contract Lifecycle Management Platform" width="240" />
+</p>
 
-CovenX is an enterprise SaaS platform for intelligent contract operations, secure document management, compliance monitoring, and AI-assisted contract intelligence.
+<p align="center"><strong>Intelligent contract operations for secure, compliant, and scalable enterprises.</strong></p>
 
-The platform supports the complete contract lifecycle:
+<p align="center">
+  <a href="docs/UserGuide.md">User Guide</a> ·
+  <a href="docs/API.md">API Reference</a> ·
+  <a href="docs/Architecture.md">Architecture</a> ·
+  <a href="docs/Database.md">Database Design</a>
+</p>
+
+## Overview
+
+**CovenX Enterprise Contract Lifecycle Management Platform** is a full-stack enterprise workspace for managing the complete contract lifecycle in one controlled system:
 
 > **Create → Review → Approve → Sign → Monitor → Renew → Archive**
 
-## Application status
+CovenX brings legal, procurement, finance, business, executive, and external stakeholder workflows together through secure document management, structured approvals, obligation monitoring, renewal visibility, auditability, and role-aware collaboration.
 
-The repository contains a runnable full-stack CovenX Enterprise Contract Lifecycle Management Platform. The backend provides authenticated REST APIs, MongoDB persistence, Redis-backed sessions and coordination, RBAC, audit logging, lifecycle enforcement, workflows, approvals, signatures, obligations, secure document upload/download, notifications, reporting, and Socket.IO events. The frontend provides the authenticated enterprise workspace, dashboard, contracts and contract-detail lifecycle, secure documents, approvals, obligations, notifications, templates, clauses, workflows, users, audit log, settings, validation, role-aware navigation, and realtime refresh behavior.
+The platform is designed around the CovenX values of **trust, security, enterprise reliability, workflow intelligence, compliance, scalability, and digital transformation**.
 
-Deployment automation is intentionally outside this repository completion scope. For local use, the required user action is to provide environment values and start the application dependencies and workspaces.
+## Product capabilities
 
-## Monorepo layout
-
-| Directory | Responsibility |
+| Capability | What CovenX provides |
 |---|---|
-| `frontend/` | React 19, Vite, TypeScript, enterprise workspace screens, typed API boundary, validation, and realtime client. |
-| `backend/` | Node.js, Express 5, TypeScript API, services, models, middleware, workers, storage, and realtime server. |
-| `database/` | Database design, migration placeholders, and seed structure. |
-| `docs/` | PRD, architecture, database, API, deployment, and user documentation. |
-| `architecture/` | Architecture diagrams and decision records. |
-| `tests/` | Repository-level test placeholder; workspace tests live under `backend/tests` and frontend source tests. |
-| `docker/` | Local container support assets. |
-| `.github/workflows/` | Build, type-check, lint, test, and production-build quality gates. |
+| Contract lifecycle management | Create drafts, maintain versions, submit for review, approve, sign, monitor, renew, and archive contracts. |
+| Enterprise approvals | Assignment-aware approval queues with comments, rejection reasons, delegation, SLAs, quorum, optimistic concurrency, and audit events. |
+| Secure document repository | Private document metadata, direct upload initiation, checksum verification, malware-scan state, authorized short-lived downloads, and retention-aware deletion. |
+| Governance | Templates, clause library, risk classification, workflow definitions, user administration, role management, permissions, and audit visibility. |
+| Obligation management | Track owners, deadlines, priorities, completion state, evidence references, escalation, and renewal exposure. |
+| Notifications | In-app notification center, read state, preferences, quiet hours, email/realtime channels, and event-driven refresh. |
+| Portfolio intelligence | Dashboard KPIs, lifecycle distribution, approval workload, obligation compliance, expirations, contract value, and reporting read models. |
+| Realtime workspace | Authenticated Socket.IO events for notification, approval, contract, obligation, and dashboard updates. |
+| Enterprise security | JWT access tokens, rotating refresh credentials, RBAC, tenant isolation, scoped authorization, rate limiting, validation, audit logging, and secure storage boundaries. |
 
-## Local setup
+## User roles
 
-Install **Node.js 20 or newer**. Copy `.env.example` to `.env` at the repository root and set the values appropriate for the local environment. Do not commit `.env` or real credentials.
+CovenX includes six baseline enterprise access profiles:
 
-Start local MongoDB and Redis using the existing compose configuration:
+| Role | Primary responsibility |
+|---|---|
+| `super-admin` | Tenant administration, user access, roles, permissions, governance, reporting, and audit. |
+| `legal-officer` | Legal authoring, review, contract history, approval decisions, signatures, documents, and audit. |
+| `department-manager` | Department contract creation, business approvals, obligations, renewals, reporting, and supporting documents. |
+| `finance-reviewer` | Commercial and financial review, assigned approvals, contract history, obligations, documents, and reporting. |
+| `executive-approver` | Executive decision-making for assigned agreements, contract history, and portfolio reporting. |
+| `vendor-user` | Restricted counterparty access to visible contracts, assigned approvals, and permitted documents. |
+
+Backend authorization remains authoritative. Frontend navigation and action visibility are convenience controls that reflect effective permissions without replacing server-side enforcement.
+
+## Architecture
+
+CovenX is implemented as a modular monolith with clear application boundaries:
+
+```text
+React 19 + Vite + TypeScript
+              │
+              │ Typed REST API + authenticated Socket.IO events
+              ▼
+Node.js + Express 5 + TypeScript
+              │
+      Controller / Service / Repository boundaries
+              │
+      MongoDB · Redis · Object Storage · Email Providers
+```
+
+| Layer | Technology and responsibility |
+|---|---|
+| Frontend | React 19, Vite, TypeScript, Lucide icons, Recharts, responsive enterprise UI, Zod request validation, typed API client, and realtime refresh. |
+| Backend | Node.js, Express 5, TypeScript, Zod validation, JWT authentication, RBAC middleware, lifecycle services, workers, and Socket.IO. |
+| Persistence | MongoDB with Mongoose models, indexes, tenant-aware queries, versioned records, audit logs, and reporting read models. |
+| Coordination | Redis for sessions, distributed rate limiting, cache and queue coordination. |
+| Documents | Mock or S3-compatible private object storage with upload initiation/finalization and scan-state controls. |
+| Quality | TypeScript type checks, ESLint, Vitest backend/frontend tests, production builds, and GitHub Actions quality gates. |
+
+The detailed architecture is documented in [`docs/Architecture.md`](docs/Architecture.md). Database collections, indexes, scaling design, retention, and security are documented in [`docs/Database.md`](docs/Database.md).
+
+## Repository structure
+
+```text
+.
+├── frontend/                # React workspace and user interface
+│   ├── public/               # Static assets including the CovenX logo
+│   └── src/                  # Pages, components, services, hooks, and utilities
+├── backend/                 # Express API, services, models, middleware, and workers
+│   ├── src/routes/           # REST API route source of truth
+│   ├── src/models/           # MongoDB models and indexes
+│   ├── src/services/         # Authentication, lifecycle, storage, workflow, and reporting
+│   └── tests/                # Backend automated tests
+├── database/                # Database design, migration, and seed structure
+├── docs/                    # Product, API, architecture, database, deployment, and user guides
+├── architecture/            # Diagrams and architecture decision records
+├── tests/                   # Repository-level test space
+├── docker/                  # Local container assets
+├── .github/workflows/       # Continuous integration quality gates
+├── .env.example             # Safe environment template; contains no credentials
+├── docker-compose.yml       # Local MongoDB and Redis services
+└── package.json             # Workspace commands
+```
+
+## Local development
+
+### Prerequisites
+
+Install **Node.js 20 or newer**, npm, Docker, and Docker Compose. The default local configuration expects MongoDB on port `27017` and Redis on port `6379`.
+
+### Configure the environment
+
+Create the local environment file from the committed template:
+
+```bash
+cp .env.example .env
+```
+
+At minimum, review `JWT_SECRET`, `MONGODB_URI`, `REDIS_URL`, `FRONTEND_URL`, and `VITE_API_URL`. The default local configuration uses mock document storage and mock email delivery so that the core workflow can be exercised without external provider credentials.
+
+### Start the application
 
 ```bash
 docker compose up -d
-```
-
-Install workspace dependencies:
-
-```bash
 npm install
-```
-
-Start both workspaces in development mode:
-
-```bash
 npm run dev
 ```
 
-The frontend is served by Vite and the backend listens on the configured `PORT`, defaulting to `4000`. The frontend API boundary defaults to `http://localhost:4000/api/v1`; set `VITE_API_URL` if the backend uses a different address.
+The application starts both workspaces through the root development command:
 
-For controlled local initialization, set `SEED_RBAC=true` and run the backend startup path once. The baseline seed creates the six enterprise access profiles and their permission relationships. Use this only in a controlled development environment.
+| Service | Default URL |
+|---|---|
+| Frontend | `http://localhost:5173` |
+| Backend API | `http://localhost:4000/api/v1` |
+| MongoDB | `mongodb://localhost:27017/covenx` |
+| Redis | `redis://localhost:6379` |
+
+To initialize baseline RBAC data in a controlled local environment, set `SEED_RBAC=true` in `.env` before starting the backend. Never use development secrets or mock providers for a production environment.
 
 ## Quality commands
+
+Run the following commands from the repository root:
 
 ```bash
 npm run typecheck
@@ -62,22 +148,54 @@ npm run test
 npm run build
 ```
 
-The automated test suite covers authentication primitives, API behavior, lifecycle transitions, workflows, documents, observability, pagination, and frontend request/capability helpers. Integration tests that require external MongoDB and Redis are intentionally skipped when those services are unavailable.
+The quality workflow validates both workspaces. Backend integration tests that require external MongoDB and Redis are skipped when those dependencies are unavailable; unit and application-boundary tests continue to run.
 
-## Core application areas
+## Application routes
 
-The REST API is exposed under `/api/v1` and is documented in [`docs/API.md`](docs/API.md). The major resource areas are authentication and sessions, users, roles, permissions, contracts, contract versions, approvals, workflows, templates, clauses, signatures, obligations, documents, notifications, dashboard analytics, and audit logs.
+The frontend workspace includes these primary routes:
 
-The frontend routes include `/`, `/contracts`, `/contracts/new`, `/contracts/:id`, `/approvals`, `/obligations`, `/documents`, `/notifications`, `/templates`, `/clauses`, `/workflows`, `/users`, `/audit`, and `/settings`. Backend permissions remain authoritative; frontend capability checks only improve navigation and action visibility.
+| Route | Purpose |
+|---|---|
+| `/` | Portfolio overview and operational dashboard |
+| `/contracts` | Searchable contract portfolio |
+| `/contracts/new` | Validated contract authoring |
+| `/contracts/:id` | Contract lifecycle, versions, approvals, signatures, documents, and audit history |
+| `/approvals` | Assigned approval decisions and delegation |
+| `/obligations` | Commitment monitoring and completion |
+| `/documents` | Secure document repository |
+| `/notifications` | Notification center and preferences |
+| `/templates` | Template governance |
+| `/clauses` | Clause library and risk classification |
+| `/workflows` | Approval workflow definitions |
+| `/users` | User administration |
+| `/audit` | Tenant-scoped audit history |
+| `/settings` | Profile and active-session security |
 
-## Architecture and security
+The REST API is served under `/api/v1`. The complete endpoint contract is available in [`docs/API.md`](docs/API.md).
 
-CovenX is organized as a modular monolith with Clean Architecture boundaries. The React frontend communicates with a stateless Node.js and Express REST API. Backend services enforce lifecycle rules, scoped RBAC, optimistic concurrency, validation, rate limiting, refresh-token rotation, tenant isolation, secure document handling, and append-only audit logging.
+## Security model
 
-MongoDB is the durable operational store. Redis supports sessions, rate limiting, caching, and coordination. Socket.IO provides authenticated realtime freshness signals. Document binaries use the configured mock or S3-compatible storage provider, while document checksums and malware-scan status are verified before authorized downloads.
+CovenX applies security controls at the API boundary and throughout the lifecycle domain. Access tokens are short-lived JWTs, refresh credentials are rotated and revocable, permissions are role-derived, and resource access is constrained by tenant and organizational scope. Mutations validate request bodies, check authorization, enforce lifecycle transitions, and use version tokens where concurrent changes could create unsafe results.
 
-Read the complete documents at [`docs/Architecture.md`](docs/Architecture.md), [`docs/Database.md`](docs/Database.md), [`docs/API.md`](docs/API.md), [`docs/UserGuide.md`](docs/UserGuide.md), and [`docs/Deployment.md`](docs/Deployment.md).
+Documents are handled through controlled upload and download flows. The application stores metadata and security state separately from the binary content, verifies checksums, prevents download of non-clean files, and issues short-lived authorized URLs. Audit records capture security-sensitive operations without exposing passwords, tokens, storage credentials, private document contents, or internal stack traces.
+
+## Documentation
+
+| Document | Description |
+|---|---|
+| [`docs/UserGuide.md`](docs/UserGuide.md) | Full operational guide, roles, permissions, workflows, exception handling, and day-to-day use. |
+| [`docs/API.md`](docs/API.md) | Implemented REST API contract, request/response behavior, errors, permissions, and lifecycle endpoints. |
+| [`docs/Architecture.md`](docs/Architecture.md) | System architecture, modular boundaries, events, infrastructure, security, and scaling approach. |
+| [`docs/Database.md`](docs/Database.md) | MongoDB and Redis design, collections, indexes, sharding, archiving, and security considerations. |
+| [`docs/PRD.md`](docs/PRD.md) | Product requirements and enterprise CLM objectives. |
+| [`docs/Deployment.md`](docs/Deployment.md) | Deployment-specific guidance and operational environment considerations. |
+| [`architecture/diagrams/`](architecture/diagrams/) | Architecture diagrams and visual system references. |
+| [`architecture/decisions/`](architecture/decisions/) | Architecture decision records. |
 
 ## Engineering principles
 
-CovenX engineering prioritizes trust, security, enterprise reliability, workflow intelligence, compliance, scalability, and digital transformation. Secrets remain outside version control. Presentation, domain, persistence, and infrastructure concerns remain separated, and all mutating workflows preserve validation, authorization, optimistic locking, and auditability.
+CovenX development prioritizes secure defaults, least privilege, explicit validation, tenant isolation, auditable state changes, immutable historical evidence, predictable APIs, responsive enterprise UX, and maintainable separation of concerns. Secrets and credentials must remain outside version control. All implementation changes should preserve the distinction between presentation, application services, domain rules, persistence, and infrastructure adapters.
+
+## Project status
+
+The repository contains the implemented CovenX application foundation and core enterprise workflows. The current branch includes the backend API, frontend workspace, role-aware navigation, secure document boundaries, realtime integration, automated tests, quality gates, and professional product documentation. Deployment execution is intentionally environment-specific and is not part of this repository README’s local development workflow.
