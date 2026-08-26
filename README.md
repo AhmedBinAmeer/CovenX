@@ -193,7 +193,8 @@ The frontend workspace includes these primary routes:
 | `/contracts/new` | Validated contract authoring |
 | `/contracts/:id` | Contract lifecycle, versions, approvals, signatures, documents, and audit history |
 | `/approvals` | Assigned approval decisions and delegation |
-| `/obligations` | Commitment monitoring and completion |
+| `/obligations` | Obligation command center with status views and completion actions |
+| `/renewals` | Renewal and expiration pipeline with urgency windows |
 | `/documents` | Secure document repository |
 | `/intelligence` | Governed contract summaries, risk analysis, term extraction, evidence-linked Q&A, and human review |
 | `/notifications` | Notification center and preferences |

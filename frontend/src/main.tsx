@@ -20,6 +20,7 @@ import { Dashboard } from './pages/Dashboard';
 import { NotFound } from './pages/NotFound';
 import { Intake } from './pages/Intake';
 import { Integrations } from './pages/Integrations';
+import { Renewals } from './pages/Renewals';
 import { hasCapability } from './utils/permissions';
 import type { Capability } from './utils/permissions';
 import type { User } from './services/types';
@@ -52,7 +53,7 @@ function App() {
 }
 
 function Page({ path, navigate, user }: { path: string; navigate: (next: string) => void; user: User }) {
-  const required: Array<[string, Capability]> = [['/', 'report:read'], ['/intake', 'intake:create'], ['/integrations', 'integration:read'], ['/contracts', 'contract:read'], ['/contracts/new', 'contract:create'], ['/approvals', 'approval:read'], ['/obligations', 'obligation:read'], ['/documents', 'document:read'], ['/intelligence', 'contract:read'], ['/notifications', 'notification:read'], ['/templates', 'template:read'], ['/clauses', 'clause:read'], ['/workflows', 'workflow:read'], ['/users', 'user:read'], ['/audit', 'audit:read']];
+  const required: Array<[string, Capability]> = [['/', 'report:read'], ['/intake', 'intake:create'], ['/integrations', 'integration:read'], ['/contracts', 'contract:read'], ['/contracts/new', 'contract:create'], ['/approvals', 'approval:read'], ['/obligations', 'obligation:read'], ['/renewals', 'contract:read'], ['/documents', 'document:read'], ['/intelligence', 'contract:read'], ['/notifications', 'notification:read'], ['/templates', 'template:read'], ['/clauses', 'clause:read'], ['/workflows', 'workflow:read'], ['/users', 'user:read'], ['/audit', 'audit:read']];
   const matched = required.find(([route]) => route === path);
   if (matched && !hasCapability(user, matched[1])) return <NotFound navigate={navigate} denied />;
   if (path.startsWith('/contracts/') && !hasCapability(user, 'contract:read')) return <NotFound navigate={navigate} denied />;
@@ -67,6 +68,7 @@ function Page({ path, navigate, user }: { path: string; navigate: (next: string)
   if (path === '/contracts') return <Contracts navigate={navigate} />;
   if (path === '/approvals') return <Approvals />;
   if (path === '/obligations') return <Obligations />;
+  if (path === '/renewals') return <Renewals navigate={navigate} />;
   if (path === '/documents') return <Documents />;
   if (path === '/intelligence') return <Intelligence />;
   if (path === '/notifications') return <Notifications />;
