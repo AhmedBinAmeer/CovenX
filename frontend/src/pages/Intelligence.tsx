@@ -7,7 +7,7 @@ function tone(severity?: string) { return severity === 'critical' || severity ==
 function pct(value?: number) { return `${Math.round((value ?? 0) * 100)}%`; }
 
 export function Intelligence() {
-  const [contractId, setContractId] = useState('');
+  const [contractId, setContractId] = useState(() => new URLSearchParams(window.location.search).get('contractId') ?? '');
   const [items, setItems] = useState<ContractIntelligence[]>([]);
   const [question, setQuestion] = useState('');
   const [playbook, setPlaybook] = useState('');
