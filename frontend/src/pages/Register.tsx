@@ -89,8 +89,7 @@ export function Register({ navigate }: { navigate: (path: string) => void }) {
         </div>
 
         <Reveal direction="scale" delay={80}>
-          <TiltCard maxTilt={1.5}>
-            <form className="register-card" onSubmit={submit}>
+          <form className="register-card" onSubmit={submit}>
               <div className="eyebrow">Create your workspace</div>
               <h2>Start with the essentials.</h2>
               <p className="subtitle">Your company becomes a separate, tenant-isolated CovenX organization.</p>
@@ -236,7 +235,6 @@ export function Register({ navigate }: { navigate: (path: string) => void }) {
                 By continuing, CovenX creates an isolated trial tenant and assigns you as its first workspace administrator.
               </p>
             </form>
-          </TiltCard>
         </Reveal>
       </main>
     </div>

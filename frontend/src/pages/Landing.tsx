@@ -1,4 +1,27 @@
-import { ArrowRight, Bot, CheckCircle2, ChevronRight, FileCheck2, Github, Globe, Linkedin, LockKeyhole, Mail, MapPin, Phone, Radar, Shield, ShieldCheck, Sparkles, Twitter, Workflow } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  ArrowDown,
+  ArrowRight,
+  Bot,
+  CheckCircle2,
+  ChevronRight,
+  FileCheck2,
+  Github,
+  Globe,
+  Linkedin,
+  LockKeyhole,
+  Mail,
+  MapPin,
+  Phone,
+  Radar,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Twitter,
+  Workflow,
+  Layers,
+  Zap,
+} from 'lucide-react';
 import { ParallaxLayer, TiltCard, Reveal } from '../components/Motion';
 
 const lifecycle = [
@@ -15,48 +38,167 @@ const signals: Array<[string, string, string]> = [
 ];
 
 export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegister: () => void }) {
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeSection, setActiveSection] = useState<'hero' | 'platform' | 'intelligence' | 'security'>('hero');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollY / docHeight) * 100)) : 0;
+      setScrollProgress(progress);
+      setScrolled(scrollY > 24);
+
+      // Active section tracking
+      const platformEl = document.getElementById('platform');
+      const intelligenceEl = document.getElementById('intelligence');
+      const securityEl = document.getElementById('security');
+
+      const pTop = platformEl?.getBoundingClientRect().top ?? 9999;
+      const iTop = intelligenceEl?.getBoundingClientRect().top ?? 9999;
+      const sTop = securityEl?.getBoundingClientRect().top ?? 9999;
+
+      if (sTop < 300) {
+        setActiveSection('security');
+      } else if (iTop < 300) {
+        setActiveSection('intelligence');
+      } else if (pTop < 300) {
+        setActiveSection('platform');
+      } else {
+        setActiveSection('hero');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 100;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="landing-page">
-      <ParallaxLayer className="landing-orb landing-orb-green" depth={0.08} />
-      <ParallaxLayer className="landing-orb landing-orb-orange" depth={0.05} />
-      <div className="landing-grid" />
+      {/* ── Living Animated Ambient Background ──────────────────────────── */}
+      <div className="landing-aurora-mesh" aria-hidden="true">
+        <div className="aurora-beam aurora-beam-1" />
+        <div className="aurora-beam aurora-beam-2" />
+        <div className="aurora-beam aurora-beam-3" />
+      </div>
 
-      <header className="landing-nav">
-        <button className="landing-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="CovenX home">
-          <img src="/covenx-logo-transparent.png" alt="CovenX" />
-          <span><strong>CovenX</strong><small>Enterprise Contract Intelligence</small></span>
-        </button>
-        <nav className="landing-links" aria-label="Landing navigation">
-          <a href="#platform">Platform</a>
-          <a href="#intelligence">Intelligence</a>
-          <a href="#security">Security</a>
-        </nav>
-        <div className="landing-nav-actions">
-          <button className="landing-text-link" onClick={onRegister}>Create workspace</button>
-          <button className="btn landing-nav-cta" onClick={onEnter}>Enter workspace <ArrowRight size={15} /></button>
+      <div className="landing-plasma-system" aria-hidden="true">
+        <ParallaxLayer className="plasma-orb plasma-orb-emerald" depth={0.12} />
+        <ParallaxLayer className="plasma-orb plasma-orb-copper" depth={0.08} />
+        <ParallaxLayer className="plasma-orb plasma-orb-cyan" depth={0.15} />
+        <ParallaxLayer className="plasma-orb plasma-orb-indigo" depth={0.05} />
+      </div>
+
+      <div className="landing-grid-interactive" aria-hidden="true" />
+      <div className="landing-starfield" aria-hidden="true">
+        <i style={{ top: '15%', left: '20%', animationDelay: '0s' }} />
+        <i style={{ top: '28%', left: '82%', animationDelay: '1.2s' }} />
+        <i style={{ top: '48%', left: '12%', animationDelay: '2.4s' }} />
+        <i style={{ top: '65%', left: '74%', animationDelay: '0.8s' }} />
+        <i style={{ top: '82%', left: '35%', animationDelay: '1.9s' }} />
+        <i style={{ top: '92%', left: '88%', animationDelay: '3.1s' }} />
+      </div>
+
+      {/* ── Strict Floating Elevated Capsule Navigation Bar ────────────── */}
+      <header className={`landing-nav-floating ${scrolled ? 'is-scrolled' : ''}`}>
+        <div className="landing-nav-progress" style={{ width: `${scrollProgress}%` }} />
+        <div className="landing-nav-inner">
+          <button
+            className="landing-brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="CovenX home"
+          >
+            <div className="brand-badge-nav">
+              <img src="/covenx-logo-transparent.png" alt="CovenX" />
+            </div>
+            <span className="brand-titles">
+              <strong>CovenX</strong>
+              <small>Enterprise Intelligence</small>
+            </span>
+          </button>
+
+          <nav className="landing-links" aria-label="Landing navigation">
+            <button
+              className={`nav-link-pill ${activeSection === 'platform' ? 'active' : ''}`}
+              onClick={() => scrollTo('platform')}
+            >
+              Platform
+            </button>
+            <button
+              className={`nav-link-pill ${activeSection === 'intelligence' ? 'active' : ''}`}
+              onClick={() => scrollTo('intelligence')}
+            >
+              Intelligence
+            </button>
+            <button
+              className={`nav-link-pill ${activeSection === 'security' ? 'active' : ''}`}
+              onClick={() => scrollTo('security')}
+            >
+              Security
+            </button>
+          </nav>
+
+          <div className="landing-nav-actions">
+            <button className="landing-text-link landing-text-link-compact" onClick={onRegister}>
+              Create workspace
+            </button>
+            <button className="btn landing-nav-cta" onClick={onEnter}>
+              <span>Enter workspace</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* ── Hero Section ────────────────────────────────────────────────── */}
       <main>
         <section className="landing-hero" aria-labelledby="landing-title">
           <Reveal direction="up" delay={40} className="landing-hero-copy">
-            <div className="eyebrow landing-eyebrow"><span className="eyebrow-dot" /> Contract intelligence, secured</div>
-            <h1 id="landing-title">Move every agreement forward <em>with confidence.</em></h1>
-            <p className="landing-lede">CovenX is the enterprise Contract Lifecycle Management Platform for teams that need to create, review, approve, sign, monitor, renew, and archive agreements with intelligence and control.</p>
+            <div className="eyebrow landing-eyebrow">
+              <span className="eyebrow-dot" />
+              <Sparkles size={13} />
+              <span>Contract intelligence, secured</span>
+            </div>
+            <h1 id="landing-title">
+              Move every agreement forward <em>with confidence.</em>
+            </h1>
+            <p className="landing-lede">
+              CovenX is the enterprise Contract Lifecycle Management Platform for teams that need to create, review, approve, sign, monitor, renew, and archive agreements with intelligence and control.
+            </p>
             <div className="landing-actions">
-              <button className="btn landing-primary" onClick={onRegister}>Create your company workspace <ArrowRight size={17} /></button>
-              <button className="landing-text-link" onClick={onEnter}>Already have access? Sign in <ChevronRight size={15} /></button>
+              <button className="btn landing-primary" onClick={onRegister}>
+                Create your company workspace <ArrowRight size={17} />
+              </button>
+              <button className="landing-text-link" onClick={onEnter}>
+                Already have access? Sign in <ChevronRight size={15} />
+              </button>
             </div>
             <div className="landing-trust-row">
               <span><ShieldCheck size={15} /> Tenant-isolated by design</span>
               <span><LockKeyhole size={15} /> Governed human review</span>
+              <span><Zap size={15} /> Real-time automation</span>
             </div>
           </Reveal>
-          <ParallaxLayer className="landing-visual" depth={0.06} aria-label="CovenX contract operations preview">
+
+          <div className="landing-visual" aria-label="CovenX contract operations preview">
             <div className="visual-halo" aria-hidden="true" />
-            <TiltCard className="dashboard-preview glass-panel" maxTilt={4}>
+            <div className="dashboard-preview glass-panel">
               <div className="preview-top">
-                <div><span className="preview-kicker">COVENX / COMMAND CENTER</span><strong>Portfolio pulse</strong></div>
+                <div>
+                  <span className="preview-kicker">COVENX / COMMAND CENTER</span>
+                  <strong>Portfolio pulse</strong>
+                </div>
                 <span className="preview-live"><i /> Live</span>
               </div>
               <div className="preview-metrics">
@@ -69,7 +211,10 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
                 ))}
               </div>
               <div className="preview-chart">
-                <div className="chart-label"><span>Contract health index</span><strong>94.2</strong></div>
+                <div className="chart-label">
+                  <span>Contract health index</span>
+                  <strong>94.2</strong>
+                </div>
                 <div className="chart-lines"><i /><i /><i /><i /><i /><i /><i /><i /></div>
                 <svg viewBox="0 0 500 150" preserveAspectRatio="none" role="img" aria-label="Contract health trend rising">
                   <defs>
@@ -86,7 +231,7 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
                 <span><Bot size={15} /> AI risk review active</span>
                 <span className="preview-secure"><ShieldCheck size={14} /> Protected</span>
               </div>
-            </TiltCard>
+            </div>
             <div className="floating-card floating-card-risk">
               <span className="float-icon orange"><Sparkles size={15} /></span>
               <div><strong>3 risks surfaced</strong><small>Evidence-linked review</small></div>
@@ -95,20 +240,39 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
               <span className="float-icon green"><CheckCircle2 size={15} /></span>
               <div><strong>Policy aligned</strong><small>Approval checkpoint cleared</small></div>
             </div>
-          </ParallaxLayer>
+          </div>
         </section>
 
+        {/* Scroll Indicator Prompt */}
+        <div className={`scroll-explore-prompt ${scrolled ? 'is-hidden' : ''}`} onClick={() => scrollTo('platform')}>
+          <div className="scroll-indicator-mouse">
+            <span className="mouse-wheel" />
+          </div>
+          <span>Scroll to explore platform</span>
+          <ArrowDown size={13} className="bounce-arrow" />
+        </div>
+
+        {/* Proof Bar */}
         <Reveal direction="scale" delay={50}>
           <section className="landing-proof" aria-label="CovenX platform outcomes">
-            <span>BUILT FOR HIGH-STAKES AGREEMENTS</span>
-            <div><strong>TRUST</strong><strong>CONTROL</strong><strong>VELOCITY</strong><strong>INTELLIGENCE</strong></div>
+            <div className="proof-heading">
+              <Layers size={14} />
+              <span>BUILT FOR HIGH-STAKES ENTERPRISE AGREEMENTS</span>
+            </div>
+            <div className="proof-tags">
+              <strong>TRUST</strong>
+              <strong>CONTROL</strong>
+              <strong>VELOCITY</strong>
+              <strong>INTELLIGENCE</strong>
+            </div>
           </section>
         </Reveal>
 
+        {/* Platform Lifecycle Section */}
         <Reveal direction="up" delay={70}>
           <section className="landing-section" id="platform">
             <div className="section-intro">
-              <div className="eyebrow">One operating system for every agreement</div>
+              <div className="eyebrow"><Sparkles size={13} /> One operating system for every agreement</div>
               <h2>From first draft to final obligation.</h2>
               <p>Replace fragmented handoffs with a secure, visible contract operation that gives every stakeholder the context to act.</p>
             </div>
@@ -117,10 +281,12 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
                 <TiltCard key={label} maxTilt={5}>
                   <article className="lifecycle-card">
                     <span className="lifecycle-number">0{index + 1}</span>
-                    <Icon size={22} />
+                    <div className="lifecycle-icon-wrap">
+                      <Icon size={22} />
+                    </div>
                     <h3>{label}</h3>
                     <p>{copy}</p>
-                    <ChevronRight size={16} />
+                    <ChevronRight size={16} className="lifecycle-arrow" />
                   </article>
                 </TiltCard>
               ))}
@@ -128,6 +294,7 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
           </section>
         </Reveal>
 
+        {/* Intelligence Section */}
         <Reveal direction="up" delay={70}>
           <section className="landing-section landing-split" id="intelligence">
             <TiltCard className="split-visual glass-panel" maxTilt={3}>
@@ -146,29 +313,37 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
               <div className="evidence-row"><span>Schedule B</span><span>Renewal notice</span><b>Review</b></div>
             </TiltCard>
             <div className="section-intro">
-              <div className="eyebrow">Intelligence without the black box</div>
+              <div className="eyebrow"><Bot size={13} /> Intelligence without the black box</div>
               <h2>AI that shows its work.</h2>
               <p>CovenX helps teams move faster without surrendering judgment. Every summary, extracted term, risk, and answer is grounded in tenant-scoped evidence and routed through human review.</p>
-              <button className="landing-outline" onClick={onEnter}>See the intelligence workspace <ArrowRight size={15} /></button>
+              <button className="landing-outline" onClick={onEnter}>
+                <span>See the intelligence workspace</span>
+                <ArrowRight size={15} />
+              </button>
             </div>
           </section>
         </Reveal>
 
+        {/* Security Section */}
         <Reveal direction="up" delay={70}>
           <section className="landing-section security-section" id="security">
-            <div className="security-badge"><ShieldCheck size={22} /></div>
+            <div className="security-badge"><ShieldCheck size={26} /></div>
             <div className="section-intro">
-              <div className="eyebrow">Enterprise trust, operationalized</div>
+              <div className="eyebrow"><LockKeyhole size={13} /> Enterprise trust, operationalized</div>
               <h2>Security is part of the workflow.</h2>
               <p>Role-based access, audit trails, secure document management, data isolation, and governed lifecycle controls are built into the CovenX operating model.</p>
               <div className="security-pills">
-                <span>RBAC</span><span>Audit-ready</span><span>Tenant isolated</span><span>Lifecycle governed</span>
+                <span><ShieldCheck size={12} /> RBAC</span>
+                <span><LockKeyhole size={12} /> Audit-ready</span>
+                <span><CheckCircle2 size={12} /> Tenant isolated</span>
+                <span><Workflow size={12} /> Lifecycle governed</span>
               </div>
             </div>
           </section>
         </Reveal>
       </main>
 
+      {/* ── Footer ──────────────────────────────────────────────────────── */}
       <footer className="landing-footer-container">
         <Reveal direction="up" delay={40}>
           <div className="landing-footer-cta-banner glass-panel">
@@ -190,7 +365,11 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
 
         <div className="landing-footer-main">
           <div className="footer-brand-col">
-            <button className="brand-button landing-footer-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="CovenX home">
+            <button
+              className="brand-button landing-footer-brand"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              aria-label="CovenX home"
+            >
               <div className="brand-badge">
                 <img className="brand-badge-logo" src="/covenx-logo-transparent.png" alt="CovenX" />
               </div>
@@ -226,9 +405,9 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
           <div className="footer-nav-col">
             <h4>Platform</h4>
             <ul>
-              <li><a href="#platform">Contract Lifecycle</a></li>
-              <li><a href="#intelligence">AI Risk Extraction</a></li>
-              <li><a href="#security">Enterprise Approvals</a></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('platform')}>Contract Lifecycle</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('intelligence')}>AI Risk Extraction</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Enterprise Approvals</button></li>
               <li><button className="footer-link-btn" onClick={onRegister}>Obligation Manager</button></li>
               <li><button className="footer-link-btn" onClick={onRegister}>Clause Intelligence</button></li>
               <li><button className="footer-link-btn" onClick={onRegister}>Renewal Pipeline</button></li>
@@ -238,28 +417,28 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
           <div className="footer-nav-col">
             <h4>Security & Trust</h4>
             <ul>
-              <li><a href="#security">Tenant Isolation</a></li>
-              <li><a href="#security">Role-Based Access (RBAC)</a></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Tenant Isolation</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Role-Based Access (RBAC)</button></li>
               <li><button className="footer-link-btn" onClick={onEnter}>Audit History</button></li>
-              <li><a href="#security">Malware File Scanning</a></li>
-              <li><a href="#security">Data Encryption at Rest</a></li>
-              <li><a href="#security">Compliance Posture</a></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Malware File Scanning</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Data Encryption at Rest</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('security')}>Compliance Posture</button></li>
             </ul>
           </div>
 
           <div className="footer-nav-col">
             <h4>Company</h4>
             <ul>
-              <li><a href="#platform">About CovenX</a></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('platform')}>About CovenX</button></li>
               <li><button className="footer-link-btn" onClick={onRegister}>Guided 14-day Trial</button></li>
               <li><button className="footer-link-btn" onClick={onEnter}>Workspace Portal</button></li>
-              <li><a href="#platform">Privacy Policy</a></li>
-              <li><a href="#platform">Terms of Service</a></li>
-              <li><a href="#intelligence">Responsible AI</a></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('platform')}>Privacy Policy</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('platform')}>Terms of Service</button></li>
+              <li><button className="footer-link-btn" onClick={() => scrollTo('intelligence')}>Responsible AI</button></li>
             </ul>
           </div>
 
-          <div className="footer-nav-col footer-contact-col">
+          <div className="footer-contact-col">
             <h4>Contact & Support</h4>
             <div className="contact-list">
               <a href="mailto:sales@covenx.com" className="contact-item">

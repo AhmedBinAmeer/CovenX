@@ -120,8 +120,7 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
         {error && <div className="notice onboarding-notice">{error}</div>}
 
         <Reveal direction="scale" delay={120}>
-          <TiltCard maxTilt={1.8}>
-            <section className="card onboarding-card">
+          <section className="card onboarding-card">
               <div className="onboarding-card-heading">
                 <div>
                   <span className="eyebrow">Step 0{stepIndex + 1} of 04</span>
@@ -252,7 +251,6 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
                 )}
               </div>
             </section>
-          </TiltCard>
         </Reveal>
       </main>
     </div>

@@ -55,8 +55,7 @@ export function Login({ navigate }: { navigate: (path: string) => void }) {
 
       <section className="login-form-section">
         <Reveal direction="scale" delay={100}>
-          <TiltCard maxTilt={2.5}>
-            <form onSubmit={submit} className="card login-card">
+          <form onSubmit={submit} className="card login-card">
               <div className="login-card-topline">
                 <button type="button" className="text-button" onClick={() => navigate('/')}>
                   <ChevronLeft size={14} /> Home
@@ -122,7 +121,6 @@ export function Login({ navigate }: { navigate: (path: string) => void }) {
                 </button>
               </div>
             </form>
-          </TiltCard>
         </Reveal>
       </section>
     </div>
