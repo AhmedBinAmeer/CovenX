@@ -75,6 +75,7 @@ Node.js + Express 5 + TypeScript
 | Persistence | MongoDB with Mongoose models, indexes, tenant-aware queries, versioned records, audit logs, and reporting read models. |
 | Coordination | Redis for sessions, distributed rate limiting, cache and queue coordination. |
 | Documents | Mock or S3-compatible private object storage with upload initiation/finalization and scan-state controls. |
+| Intelligence | Governed server-side contract summaries, structured term extraction, explainable risk findings, playbook-aware review, evidence-grounded Q&A, confidence signals, and human review decisions. |
 | Quality | TypeScript type checks, ESLint, Vitest backend/frontend tests, production builds, and GitHub Actions quality gates. |
 
 The detailed architecture is documented in [`docs/Architecture.md`](docs/Architecture.md). Database collections, indexes, scaling design, retention, and security are documented in [`docs/Database.md`](docs/Database.md).
@@ -147,7 +148,7 @@ Create the local environment file from the committed template:
 cp .env.example .env
 ```
 
-At minimum, review `JWT_SECRET`, `MONGODB_URI`, `REDIS_URL`, `FRONTEND_URL`, and `VITE_API_URL`. The default local configuration uses mock document storage and mock email delivery so that the core workflow can be exercised without external provider credentials.
+At minimum, review `JWT_SECRET`, `MONGODB_URI`, `REDIS_URL`, `FRONTEND_URL`, and `VITE_API_URL`. The default local configuration uses mock document storage, mock email delivery, and `AI_PROVIDER=mock`, so the core workflow can be exercised without external provider credentials. To enable governed AI analysis, set `AI_PROVIDER=openai`, provide the server-side `AI_API_KEY`, and optionally configure `AI_BASE_URL`, `AI_MODEL`, and `AI_MAX_OUTPUT_TOKENS`. The API key must remain server-side and must never be exposed through Vite or committed to the repository.
 
 ### Start the application
 
@@ -194,6 +195,7 @@ The frontend workspace includes these primary routes:
 | `/approvals` | Assigned approval decisions and delegation |
 | `/obligations` | Commitment monitoring and completion |
 | `/documents` | Secure document repository |
+| `/intelligence` | Governed contract summaries, risk analysis, term extraction, evidence-linked Q&A, and human review |
 | `/notifications` | Notification center and preferences |
 | `/templates` | Template governance |
 | `/clauses` | Clause library and risk classification |

@@ -251,3 +251,23 @@ tbody tr:hover td:first-child { box-shadow: inset 3px 0 #1d9365; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* CovenX Intelligence workspace */
+.intelligence-hero { background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(240,250,246,.82)); border-color: rgba(29,147,101,.18); }
+.intelligence-grid { align-items: start; }
+.intelligence-summary { color: #304b60; font-size: 15px; line-height: 1.8; margin: 0; }
+.intelligence-list { display: grid; gap: 10px; }
+.intelligence-item, .intelligence-risk { border: 1px solid #e7edf1; border-radius: 12px; padding: 13px 14px; background: rgba(255,255,255,.78); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.intelligence-item:hover, .intelligence-risk:hover { transform: translateY(-2px); border-color: rgba(29,147,101,.3); box-shadow: 0 10px 22px rgba(16,36,58,.07); }
+.intelligence-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.intelligence-item p { color: #435c6f; line-height: 1.55; margin: 6px 0; }
+.intelligence-item small, .intelligence-risk small { display: block; color: #718596; font-size: 11px; line-height: 1.5; margin-top: 5px; }
+.intelligence-risk { border-left: 3px solid #e87b28; }
+.intelligence-risk .panel-header { margin-bottom: 8px; }
+.intelligence-risk p { color: #435c6f; line-height: 1.55; margin: 0; }
+.intelligence-review { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #edf1f4; margin-top: 18px; padding-top: 15px; color: #718596; font-size: 12px; font-weight: 700; }
+.intelligence-review > div { display: flex; gap: 8px; }
+.intelligence-question { width: 100%; min-height: 120px; margin-bottom: 12px; border: 1px solid #dfe7ec; border-radius: 10px; padding: 12px; resize: vertical; outline: none; color: #173149; }
+.intelligence-question:focus { border-color: #49a982; box-shadow: 0 0 0 4px rgba(29,147,101,.1); }
+.intelligence-hero .notice { margin-top: 14px; }
+@media (max-width: 620px) { .intelligence-review, .intelligence-item { align-items: stretch; flex-direction: column; } .intelligence-review > div { width: 100%; } .intelligence-review .btn { flex: 1; } }

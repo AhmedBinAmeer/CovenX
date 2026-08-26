@@ -236,6 +236,19 @@ Contract states are `draft`, `review`, `approval`, `signature`, `active`, `monit
 
 Lifecycle errors include `CONTRACT_NOT_FOUND`, `CONTRACT_VERSION_NOT_FOUND`, `INVALID_LIFECYCLE_TRANSITION`, `REQUIRED_METADATA_MISSING`, `WORKFLOW_NOT_SATISFIED`, `VERSION_CONFLICT`, `CONTRACT_LOCKED`, and `RESOURCE_SCOPE_DENIED`.
 
+### Contract intelligence endpoints
+
+CovenX Intelligence is server-side only and receives tenant-scoped contract evidence. It must not be treated as an autonomous legal decision-maker. Responses include evidence pointers, confidence, missing-information warnings, and a human review state. When `AI_PROVIDER=mock`, the API remains runnable locally and returns conservative metadata-based results; when `AI_PROVIDER=openai`, the server uses the configured server-side model and API key.
+
+| Method and path | Purpose | Request fields | Success | Required permission |
+|---|---|---|---|---|
+| `GET /contracts/:id/intelligence` | List persisted analyses and questions | Path contract ID | `200` intelligence collection | `contract:read` plus scope |
+| `POST /contracts/:id/intelligence/analyze` | Generate summary, extracted terms, risks, missing-information findings, and optional playbook comparison | `{ playbook?: string[] }` | `201` intelligence analysis | `contract:update` plus scope |
+| `POST /contracts/:id/intelligence/ask` | Ask an evidence-grounded question about the selected contract | `{ question, intelligenceId? }` | `201` intelligence answer with citations | `contract:read` plus scope |
+| `POST /intelligence/:id/review` | Accept or override an AI result | `{ decision: 'accepted' \| 'overridden', notes? }` | `200` reviewed intelligence record | `contract:update` plus scope |
+
+AI errors include `AI_EMPTY_RESPONSE`, `INTELLIGENCE_NOT_FOUND`, `CONTRACT_NOT_FOUND`, `VALIDATION_FAILED`, `PERMISSION_DENIED`, and provider/network errors. The service stores provider/model metadata, an input hash for repeatability, source version, evidence, reviewer, review decision, and review timestamp. It never stores the API key or raw authorization headers.
+
 ### Contract resource example
 
 ```json

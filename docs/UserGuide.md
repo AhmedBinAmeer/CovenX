@@ -82,9 +82,22 @@ The recommended setup sequence is:
 | Workflows | Create and search approval workflow definitions |
 | Users | Review users and deactivate users when authorized |
 | Audit log | Search immutable activity records and investigate sensitive operations |
+| Intelligence | Generate evidence-linked summaries, extract terms, review risks, ask authorized questions, and record human decisions |
 | Settings | Edit profile details and revoke active sessions |
 
-## 5. End-to-end contract use case
+## 5. CovenX Intelligence
+
+CovenX Intelligence is a governed assistant for contract review. It analyzes only the tenant-scoped contract record and selected version evidence available to the authenticated user. It is not an autonomous legal decision-maker, and every finding should be checked by an appropriately authorized human before it influences a contract decision.
+
+To begin, open **Intelligence** from the workspace navigation, enter a visible contract ID, and select **Analyze contract**. You may add an optional review playbook with one expectation per line, such as “Liability cap should not exceed twelve months of fees” or “Termination for convenience requires thirty days’ notice.” The result includes an executive summary, extracted terms, risk findings, confidence signals, evidence pointers, and missing-information warnings.
+
+The intelligence page also supports authorized contract questions. Ask a specific question, such as “What are the renewal and termination requirements?” CovenX stores the answer with citations to the evidence used. If the evidence is insufficient, the assistant is designed to say so rather than invent an answer. Users should upload or attach readable contract content when metadata alone cannot establish the answer.
+
+A reviewer can select **Accept** when the result is reliable for operational use or **Override** when the result is incomplete, inaccurate, or superseded by human judgment. The decision, reviewer, timestamp, provider/model metadata, source version, and review state are retained in the audit trail. Intelligence results should never be treated as a substitute for legal advice, approval authority, or the organization’s contract policy.
+
+When local development uses `AI_PROVIDER=mock`, CovenX returns conservative metadata-based results so the workflow can be tested without an external model. To use a configured provider, an administrator sets `AI_PROVIDER=openai` and the server-side `AI_API_KEY`; the key must never be exposed in the browser or committed to source control.
+
+## 6. End-to-end contract use case
 
 ### Use case: create a new supplier agreement
 

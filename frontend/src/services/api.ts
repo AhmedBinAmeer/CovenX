@@ -1,4 +1,4 @@
-import type { ApiError, ApprovalTask, Contract, ContractVersion, DocumentRecord, Id, NotificationRecord, Obligation, Paginated, Session, User } from './types';
+import type { ApiError, ApprovalTask, Contract, ContractIntelligence, ContractVersion, DocumentRecord, Id, NotificationRecord, Obligation, Paginated, Session, User } from './types';
 
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/v1';
 const browserStorage = typeof window !== 'undefined' ? window.localStorage : null;
@@ -55,6 +55,10 @@ export const endpoints = {
   renewContract: (id: Id, targetExpiryDate?: string) => request<any>(`/contracts/${id}/renew`, json(targetExpiryDate ? { targetExpiryDate } : {})),
   contractHistory: (id: Id) => request<any[]>(`/contracts/${id}/history`),
   contractVersions: (id: Id) => request<ContractVersion[]>(`/contracts/${id}/versions`),
+  contractIntelligence: (id: Id) => request<ContractIntelligence[]>(`/contracts/${id}/intelligence`),
+  analyzeContract: (id: Id, body: unknown = {}) => request<ContractIntelligence>(`/contracts/${id}/intelligence/analyze`, json(body)),
+  askContract: (id: Id, body: unknown) => request<ContractIntelligence>(`/contracts/${id}/intelligence/ask`, json(body)),
+  reviewIntelligence: (id: Id, body: unknown) => request<ContractIntelligence>(`/intelligence/${id}/review`, json(body)),
   createContractVersion: (id: Id, body: unknown) => request<ContractVersion>(`/contracts/${id}/versions`, json(body)),
   contractApprovals: (id: Id) => request<ApprovalTask[]>(`/contracts/${id}/approvals`),
   requestSignature: (id: Id, body: unknown) => request<any>(`/contracts/${id}/signature/request`, json(body)),
