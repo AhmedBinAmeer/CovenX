@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import crypto from 'node:crypto';
 import { z } from 'zod';
 import { config } from '../config/index.js';
-import { Contract, ContractIntelligence, ContractVersion } from '../models/index.js';
+import { Contract, ContractIntelligence, ContractVersion, DocumentChunk } from '../models/index.js';
 
 const analysisSchema = z.object({
   summary: z.string().min(1).max(5000),
@@ -35,7 +35,7 @@ type ContractContext = { contract: any; version: any; sourceText: string };
 
 function hash(value: string) { return crypto.createHash('sha256').update(value).digest('hex'); }
 
-function toContext(contract: any, version: any): ContractContext {
+function toContext(contract: any, version: any, documentEvidence: any[] = []): ContractContext {
   const source = JSON.stringify({
     contract: {
       contractNumber: contract.contractNumber,
@@ -51,6 +51,7 @@ function toContext(contract: any, version: any): ContractContext {
       tags: contract.tags,
       metadata: contract.metadata,
     },
+    documentEvidence: documentEvidence.map((chunk) => ({ chunkId: String(chunk._id), documentId: String(chunk.documentId), pageStart: chunk.pageStart, pageEnd: chunk.pageEnd, text: chunk.text })),
     version: version ? {
       versionNumber: version.versionNumber,
       state: version.state,
@@ -104,7 +105,8 @@ export async function getContractContext(tenantId: string, contractId: string): 
   const contract = await Contract.findOne({ _id: contractId, tenantId });
   if (!contract) throw new Error('CONTRACT_NOT_FOUND');
   const version = contract.currentVersionId ? await ContractVersion.findOne({ _id: contract.currentVersionId, tenantId, contractId }) : await ContractVersion.findOne({ tenantId, contractId }).sort({ versionNumber: -1 });
-  return toContext(contract, version);
+  const documentEvidence = await DocumentChunk.find({ tenantId, contractId, contractVersionId: version?._id }).sort({ chunkIndex: 1 }).limit(40).lean();
+  return toContext(contract, version, documentEvidence);
 }
 
 export async function analyzeContract(tenantId: string, contractId: string, actorId: string, playbook: string[] = []) {

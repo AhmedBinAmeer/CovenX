@@ -3,12 +3,13 @@ import { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand, Delete
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export type UploadRequest = { key: string; mimeType: string; sizeBytes: number; checksum: string };
-export interface StorageProvider { createUploadUrl(input: UploadRequest): Promise<{ url: string; headers: Record<string, string>; expiresAt: Date }>; verifyUpload(key: string): Promise<{ exists: boolean; checksum?: string }>; createDownloadUrl(key: string): Promise<{ url: string; expiresAt: Date }>; deleteObject(key: string): Promise<void>; checkHealth?(): Promise<boolean>; }
+export interface StorageProvider { createUploadUrl(input: UploadRequest): Promise<{ url: string; headers: Record<string, string>; expiresAt: Date }>; verifyUpload(key: string): Promise<{ exists: boolean; checksum?: string }>; createDownloadUrl(key: string): Promise<{ url: string; expiresAt: Date }>; readObject?(key: string): Promise<Buffer>; deleteObject(key: string): Promise<void>; checkHealth?(): Promise<boolean>; }
 export class MockStorageProvider implements StorageProvider {
-  private objects = new Map<string, { checksum: string; sizeBytes: number; mimeType: string }>();
+  private objects = new Map<string, { checksum: string; sizeBytes: number; mimeType: string; body?: Buffer }>();
   async createUploadUrl(input: UploadRequest) { this.objects.set(input.key, { checksum: input.checksum, sizeBytes: input.sizeBytes, mimeType: input.mimeType }); return { url: `mock://upload/${encodeURIComponent(input.key)}`, headers: { 'x-mock-checksum': input.checksum }, expiresAt: new Date(Date.now() + 15 * 60_000) }; }
   async verifyUpload(key: string) { const value = this.objects.get(key); return value ? { exists: true, checksum: value.checksum } : { exists: false }; }
   async createDownloadUrl(key: string) { if (!this.objects.has(key)) throw new Error('OBJECT_NOT_FOUND'); return { url: `mock://download/${encodeURIComponent(key)}`, expiresAt: new Date(Date.now() + 5 * 60_000) }; }
+  async readObject(key: string) { const object = this.objects.get(key); if (!object?.body) throw new Error('OBJECT_CONTENT_UNAVAILABLE'); return object.body; }
   async deleteObject(key: string) { this.objects.delete(key); }
   async checkHealth() { return true; }
 }
@@ -19,6 +20,7 @@ export class S3StorageProvider implements StorageProvider {
   async createUploadUrl(input: UploadRequest) { this.ensureConfigured(); const expiresAt = new Date(Date.now() + this.expiry * 1000); const command = new PutObjectCommand({ Bucket: this.bucket, Key: input.key, ContentType: input.mimeType, ContentLength: input.sizeBytes, Metadata: { checksum: input.checksum } }); return { url: await getSignedUrl(this.client, command, { expiresIn: this.expiry }), headers: { 'content-type': input.mimeType, 'x-amz-meta-checksum': input.checksum }, expiresAt }; }
   async verifyUpload(key: string) { this.ensureConfigured(); try { const object: any = await this.client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: key })); return { exists: true, checksum: object.Metadata?.checksum }; } catch { return { exists: false }; } }
   async createDownloadUrl(key: string) { this.ensureConfigured(); const expiresAt = new Date(Date.now() + this.expiry * 1000); return { url: await getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: key }), { expiresIn: this.expiry }), expiresAt }; }
+  async readObject(key: string) { this.ensureConfigured(); const result: any = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key })); return Buffer.from(await result.Body.transformToByteArray()); }
   async deleteObject(key: string) { this.ensureConfigured(); await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key })); }
   async checkHealth() { try { this.ensureConfigured(); await this.client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: '.covenx-healthcheck' })); return true; } catch (error: any) { return error?.$metadata?.httpStatusCode === 404; } }
 }

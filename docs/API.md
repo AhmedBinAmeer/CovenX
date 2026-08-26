@@ -250,6 +250,17 @@ Contract states are `draft`, `review`, `approval`, `signature`, `active`, `monit
 
 Lifecycle errors include `CONTRACT_NOT_FOUND`, `CONTRACT_VERSION_NOT_FOUND`, `INVALID_LIFECYCLE_TRANSITION`, `REQUIRED_METADATA_MISSING`, `WORKFLOW_NOT_SATISFIED`, `VERSION_CONFLICT`, `CONTRACT_LOCKED`, and `RESOURCE_SCOPE_DENIED`.
 
+### Document intelligence and semantic retrieval endpoints
+
+Clean, checksum-verified PDF, DOCX, and plain-text documents can be indexed into tenant-scoped evidence chunks. Indexing stores text hashes, source document/version references, bounded chunk metadata, and an embedding model identifier; raw storage keys and vectors are never returned to clients. The `document:index` permission is required for ingestion, while semantic search requires `contract:read` and is additionally constrained by an optional contract ID.
+
+| Method and path | Purpose | Request fields | Success | Required permission |
+|---|---|---|---|---|
+| `POST /documents/:id/index` | Extract and index a clean uploaded document | Empty JSON body | `202` indexing result with chunk count and model | `document:index` |
+| `POST /search/semantic` | Retrieve relevant indexed evidence chunks | `{ q, contractId?, limit? }` | `200` ranked evidence collection | `contract:read` |
+
+PDF and DOCX parsing occurs only after malware scan and upload checksum verification. Unsupported MIME types, unavailable object content, empty extraction, and documents that are not clean/uploaded fail closed. OpenAI-compatible embeddings are used only when explicitly configured; local development falls back to a deterministic non-secret embedding provider. Semantic results are ranked server-side and omit embedding vectors.
+
 ### Contract intelligence endpoints
 
 CovenX Intelligence is server-side only and receives tenant-scoped contract evidence. It must not be treated as an autonomous legal decision-maker. Responses include evidence pointers, confidence, missing-information warnings, and a human review state. When `AI_PROVIDER=mock`, the API remains runnable locally and returns conservative metadata-based results; when `AI_PROVIDER=openai`, the server uses the configured server-side model and API key.
