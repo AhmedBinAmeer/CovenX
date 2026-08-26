@@ -492,3 +492,198 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 900px) { .landing-hero { grid-template-columns: 1fr; padding-top: 55px; } .landing-visual { min-height: 440px; } .lifecycle-grid { grid-template-columns: repeat(2, 1fr); } .landing-split { gap: 45px; } }
 @media (max-width: 640px) { .landing-nav, .landing-hero, .landing-proof, .landing-section, .landing-footer { width: min(100% - 32px, 1100px); } .landing-nav { height: 76px; } .landing-links { display: none; } .landing-nav-cta { padding: 8px 11px; font-size: 10px; } .landing-nav-cta svg { display: none; } .landing-hero { padding: 45px 0 70px; } .landing-hero h1 { font-size: clamp(43px, 13vw, 64px); } .landing-lede { font-size: 14px; } .landing-visual { min-height: 350px; } .dashboard-preview { padding: 16px; min-height: 300px; transform: none; } .preview-top strong { font-size: 18px; } .preview-metric { padding: 9px; } .preview-metric strong { font-size: 17px; } .preview-chart svg { height: 95px; } .chart-lines { left: 16px; right: 16px; bottom: 73px; gap: 20px; } .floating-card { transform: scale(.82); } .floating-card-risk { right: -32px; top: 20px; } .floating-card-secure { left: -35px; bottom: 25px; } .landing-proof { display: grid; gap: 15px; } .landing-proof div { gap: 15px; flex-wrap: wrap; } .landing-section { padding: 90px 0; } .lifecycle-grid { grid-template-columns: 1fr; } .landing-split { grid-template-columns: 1fr; } .security-section { gap: 18px; } .landing-footer { align-items: flex-start; flex-direction: column; } }
 @media (prefers-reduced-motion: reduce) { .landing-orb, .dashboard-preview, .floating-card, .preview-metric, .loading-orbit, .login-hero::after { animation: none !important; } .landing-brand img, .lifecycle-card, .landing-primary, .landing-outline { transition: none !important; } }
+
+
+/* ── CovenX 2.0 motion system ─────────────────────────────────────────────── */
+:root {
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+  --motion-fast: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 620ms;
+}
+html { scroll-behavior: smooth; }
+body { overflow-x: hidden; }
+
+/* A lightweight pointer spotlight; it is decorative and never captures input. */
+.cursor-glow {
+  position: fixed;
+  z-index: 999;
+  width: 260px;
+  height: 260px;
+  left: var(--cursor-x, -100px);
+  top: var(--cursor-y, -100px);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(45,168,117,.11), rgba(45,168,117,.035) 34%, transparent 70%);
+  mix-blend-mode: multiply;
+  transition: opacity 240ms ease;
+}
+.cursor-glow.is-active { opacity: .7; }
+
+/* Pointer tilt is intentionally shallow so enterprise surfaces remain calm and legible. */
+.tilt-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-glow-x: 50%;
+  --tilt-glow-y: 50%;
+  position: relative;
+  transform: perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 360ms var(--ease-out), box-shadow 360ms var(--ease-out), border-color 220ms ease;
+  will-change: transform;
+}
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--tilt-glow-x) var(--tilt-glow-y), rgba(255,255,255,.42), transparent 36%);
+  transition: opacity 260ms ease;
+  mix-blend-mode: soft-light;
+}
+.tilt-card.is-tilting { box-shadow: 0 22px 48px rgba(16,45,69,.13); }
+.tilt-card.is-tilting::after { opacity: .7; }
+.parallax-layer {
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+  transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
+  transition: transform 500ms var(--ease-out);
+  will-change: transform;
+}
+
+/* Shared physical feedback: lift, press, icon response, and sheen. */
+.btn, .icon-button, .nav-item, .command-item, .landing-brand, .landing-text-link, .landing-outline, .lifecycle-card, .security-pills span {
+  -webkit-tap-highlight-color: transparent;
+}
+.btn { isolation: isolate; }
+.btn:not(:disabled):hover { transform: translateY(-3px); }
+.btn:not(:disabled):active { transform: translateY(-1px) scale(.975); transition-duration: var(--motion-fast); }
+.btn svg { transition: transform var(--motion-base) var(--ease-out); }
+.btn:not(:disabled):hover svg { transform: translateX(3px); }
+.btn-secondary:not(:disabled):hover { border-color: rgba(45,168,117,.38); background: #f5fbf8; box-shadow: 0 10px 24px rgba(16,45,69,.08); }
+.icon-button:not(:disabled):hover { transform: translateY(-2px) rotate(-2deg); }
+.icon-button:not(:disabled):active { transform: scale(.92); }
+.icon-button svg { transition: transform var(--motion-base) var(--ease-out); }
+.icon-button:hover svg { transform: scale(1.08); }
+
+/* Make all recurring data surfaces feel responsive without shifting layout. */
+.card, .panel, .table-card { transform: translateZ(0); }
+.card:not(.tilt-card):hover { transform: translateY(-4px); box-shadow: 0 20px 42px rgba(16,45,69,.1); }
+.kpi-card::before, .panel::before, .table-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.58) 48%, transparent 66%);
+  transform: translateX(-115%);
+  transition: opacity 180ms ease;
+}
+.kpi-card:hover::before, .panel:hover::before, .table-card:hover::before { opacity: .65; animation: covenx-sheen 850ms var(--ease-out) both; }
+.card > *, .tilt-card > * { position: relative; z-index: 1; }
+.panel-header h2, .table-toolbar h2 { transition: color 180ms ease, transform 220ms var(--ease-out); }
+.panel:hover .panel-header h2, .table-card:hover .table-toolbar h2 { color: #1d9365; transform: translateX(2px); }
+tbody tr { transform: translateZ(0); }
+tbody tr:hover { transform: translateX(3px); }
+tbody tr td { transition: color 180ms ease, background 180ms ease; }
+tbody tr:hover td { color: #173149; }
+
+/* Input focus is a calm state transition instead of a hard border swap. */
+.field input, .field select, .field textarea, .search, .intelligence-question {
+  transition: border-color 180ms ease, box-shadow 220ms ease, transform 220ms var(--ease-out), background 180ms ease;
+}
+.field input:hover, .field select:hover, .field textarea:hover, .search:hover { border-color: rgba(45,168,117,.4); }
+.field input:focus, .field select:focus, .field textarea:focus, .search:focus-within, .intelligence-question:focus { transform: translateY(-2px); }
+
+/* Navigation, breadcrumb, and workspace chrome. */
+.sidebar { isolation: isolate; }
+.sidebar .brand-button { transition: transform 240ms var(--ease-out), opacity 180ms ease; }
+.sidebar .brand-button:hover { transform: translateX(3px); }
+.sidebar .brand-button:active { transform: scale(.98); }
+.sidebar .brand-logo { transition: transform 300ms var(--ease-out), filter 300ms ease; }
+.sidebar .brand-button:hover .brand-logo { transform: rotate(-3deg) scale(1.04); filter: drop-shadow(0 0 12px rgba(85,211,154,.3)); }
+.nav-item { transition: background 180ms ease, color 180ms ease, transform 180ms var(--ease-out), padding-left 180ms var(--ease-out); }
+.nav-item:hover { padding-left: 16px; }
+.nav-item.active { box-shadow: inset 3px 0 #36b47f, 0 8px 20px rgba(0,0,0,.08); }
+.nav-item.active svg { animation: covenx-nav-pulse 2.8s ease-in-out infinite; }
+@keyframes covenx-nav-pulse { 0%, 100% { filter: drop-shadow(0 0 0 rgba(85,211,154,0)); } 50% { filter: drop-shadow(0 0 7px rgba(85,211,154,.65)); } }
+.breadcrumb strong { display: inline-block; animation: covenx-fade-right .38s var(--ease-out) both; }
+.live-indicator { transition: transform 220ms var(--ease-out), box-shadow 220ms ease; }
+.live-indicator:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(45,168,117,.16); }
+
+/* Structured entrances for page groups and recurring list items. */
+.page-heading { animation: covenx-fade-down .52s var(--ease-out) both; }
+.page-heading .btn { animation: covenx-scale-reveal .48s var(--ease-out) 120ms both; }
+.content > .notice { animation: covenx-fade-down .38s var(--ease-out) both; }
+.status-list > *, .security-pills > *, .command-item { animation: covenx-fade-up .4s var(--ease-out) both; }
+.status-list > *:nth-child(1), .security-pills > *:nth-child(1), .command-item:nth-child(1) { animation-delay: 30ms; }
+.status-list > *:nth-child(2), .security-pills > *:nth-child(2), .command-item:nth-child(2) { animation-delay: 70ms; }
+.status-list > *:nth-child(3), .security-pills > *:nth-child(3), .command-item:nth-child(3) { animation-delay: 110ms; }
+.status-list > *:nth-child(4), .security-pills > *:nth-child(4), .command-item:nth-child(4) { animation-delay: 150ms; }
+.status-list > *:nth-child(5), .security-pills > *:nth-child(5), .command-item:nth-child(5) { animation-delay: 190ms; }
+
+/* Loading state with a reassuring progress pulse instead of a static spinner. */
+.loading-screen { position: relative; overflow: hidden; isolation: isolate; }
+.loading-screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 38%, rgba(45,168,117,.16), transparent 35%); animation: covenx-loading-breathe 2.4s ease-in-out infinite; z-index: -1; }
+.loading-screen img { position: relative; z-index: 1; filter: drop-shadow(0 14px 32px rgba(45,168,117,.18)); }
+.loading-orbit, .loading-ring { z-index: 0; }
+.loading-ring { width: 224px; height: 224px; position: absolute; border: 1px solid rgba(240,154,80,.14); border-left-color: rgba(240,154,80,.6); border-radius: 50%; animation: spin 4.2s linear infinite reverse; }
+.loading-progress { width: 180px; height: 3px; overflow: hidden; border-radius: 999px; background: rgba(85,211,154,.12); }
+.loading-progress i { display: block; width: 45%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, transparent, var(--emerald-400), transparent); animation: covenx-loading-progress 1.45s var(--ease-in-out) infinite; }
+@keyframes covenx-loading-breathe { 0%, 100% { opacity: .55; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.06); } }
+@keyframes covenx-loading-progress { from { transform: translateX(-150%); } to { transform: translateX(390%); } }
+
+/* Landing-specific motion: staged copy, depth, and responsive hover response. */
+.landing-hero-copy > * { opacity: 0; animation: covenx-fade-up .72s var(--ease-out) both; }
+.landing-hero-copy > :nth-child(1) { animation-delay: 80ms; }
+.landing-hero-copy > :nth-child(2) { animation-delay: 150ms; }
+.landing-hero-copy > :nth-child(3) { animation-delay: 230ms; }
+.landing-hero-copy > :nth-child(4) { animation-delay: 310ms; }
+.landing-hero-copy > :nth-child(5) { animation-delay: 390ms; }
+.landing-visual { transition: transform 500ms var(--ease-out); }
+.dashboard-preview { transform-style: preserve-3d; }
+.dashboard-preview > * { transform: translateZ(18px); }
+.preview-metric { transition: transform 240ms var(--ease-out), border-color 220ms ease, background 220ms ease; }
+.preview-metric:hover { transform: translateY(-4px) translateZ(22px); border-color: rgba(85,211,154,.36); background: rgba(45,168,117,.16); }
+.floating-card { transition: transform 300ms var(--ease-out), border-color 220ms ease, box-shadow 220ms ease; }
+.floating-card:hover { transform: translateY(-7px) scale(1.03); border-color: rgba(85,211,154,.42); box-shadow: 0 22px 48px rgba(0,0,0,.3); }
+.lifecycle-card { overflow: hidden; }
+.lifecycle-card::before { content: ''; position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at 20% 20%, rgba(85,211,154,.18), transparent 48%); transition: opacity 280ms ease; pointer-events: none; }
+.lifecycle-card:hover::before { opacity: 1; }
+.lifecycle-card > * { position: relative; }
+.lifecycle-card:hover svg:not(:last-child) { transform: translateY(-3px) rotate(-6deg) scale(1.08); }
+.lifecycle-card svg { transition: transform 280ms var(--ease-out); }
+.landing-text-link svg, .landing-outline svg { transition: transform 220ms var(--ease-out); }
+.landing-text-link:hover svg, .landing-outline:hover svg { transform: translateX(5px); }
+.security-badge { transition: transform 320ms var(--ease-out), box-shadow 300ms ease; }
+.security-section:hover .security-badge { transform: translateY(-5px) rotate(-5deg); box-shadow: 0 16px 30px rgba(45,168,117,.16); }
+.security-pills span { transition: transform 200ms var(--ease-out), border-color 180ms ease, color 180ms ease, background 180ms ease; }
+.security-pills span:hover { transform: translateY(-3px); color: var(--emerald-400); border-color: rgba(85,211,154,.4); background: rgba(45,168,117,.1); }
+
+/* Modal and command palette transitions stay quick and keyboard-friendly. */
+.command-backdrop { animation: covenx-fade-down 180ms var(--ease-out) both; }
+.command-palette { transform-origin: top center; animation: covenx-scale-reveal 220ms var(--ease-out) both; }
+.command-item:active { transform: translateX(4px) scale(.99); }
+
+@media (max-width: 760px) {
+  .cursor-glow { display: none; }
+  .tilt-card { transform: none !important; }
+  .parallax-layer { transform: none; }
+  .landing-hero-copy > * { animation-delay: 0ms; }
+  .card:not(.tilt-card):hover { transform: translateY(-2px); }
+  .nav-item:hover { padding-left: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor-glow { display: none; }
+  .tilt-card, .parallax-layer { transform: none !important; transition: none !important; }
+  .tilt-card::after { display: none; }
+  .landing-hero-copy > *, .loading-screen::before, .loading-progress i { opacity: 1; animation: none !important; }
+  .loading-orbit, .loading-ring { animation: none !important; }
+}

@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { encryptSecret, decryptSecret, verifyHmacSignature, verifySlackSignature } from '../src/services/integrations.js';
 
@@ -11,7 +12,7 @@ describe('CovenX integration security helpers', () => {
   });
   it('verifies generic HMAC webhook signatures and rejects tampering', () => {
     const body = '{"event":"contract.signed"}';
-    const signature = require('node:crypto').createHmac('sha256', 'secret').update(body).digest('hex');
+    const signature = createHmac('sha256', 'secret').update(body).digest('hex');
     expect(verifyHmacSignature(body, signature, 'secret')).toBe(true);
     expect(verifyHmacSignature(`${body}x`, signature, 'secret')).toBe(false);
   });

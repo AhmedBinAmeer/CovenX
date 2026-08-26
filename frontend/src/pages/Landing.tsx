@@ -1,4 +1,5 @@
 import { ArrowRight, Bot, CheckCircle2, ChevronRight, FileCheck2, LockKeyhole, Radar, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
+import { ParallaxLayer, TiltCard } from '../components/Motion';
 
 const lifecycle = [
   { icon: FileCheck2, label: 'Create', copy: 'Start from governed templates and clause intelligence.' },
@@ -38,17 +39,17 @@ export function Landing({ onEnter }: { onEnter: () => void }) {
           <div className="landing-actions"><button className="btn landing-primary" onClick={onEnter}>Open the enterprise workspace <ArrowRight size={17} /></button><a className="landing-text-link" href="#platform">Explore the platform <ChevronRight size={15} /></a></div>
           <div className="landing-trust-row"><span><ShieldCheck size={15} /> Tenant-isolated by design</span><span><LockKeyhole size={15} /> Governed human review</span></div>
         </div>
-        <div className="landing-visual" aria-label="CovenX contract operations preview">
+        <ParallaxLayer className="landing-visual" depth={0.06} aria-label="CovenX contract operations preview">
           <div className="visual-halo" aria-hidden="true" />
-          <div className="dashboard-preview glass-panel">
+          <TiltCard className="dashboard-preview glass-panel" maxTilt={3}>
             <div className="preview-top"><div><span className="preview-kicker">COVENX / COMMAND CENTER</span><strong>Portfolio pulse</strong></div><span className="preview-live"><i /> Live</span></div>
             <div className="preview-metrics">{signals.map(([label, value, meta], index) => <div className="preview-metric" key={label} style={{ animationDelay: `${index * 120}ms` }}><span>{label}</span><strong>{value}</strong><small>{meta}</small></div>)}</div>
             <div className="preview-chart"><div className="chart-label"><span>Contract health index</span><strong>94.2</strong></div><div className="chart-lines"><i /><i /><i /><i /><i /><i /><i /><i /></div><svg viewBox="0 0 500 150" preserveAspectRatio="none" role="img" aria-label="Contract health trend rising"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#41c78e" stopOpacity=".34" /><stop offset="1" stopColor="#41c78e" stopOpacity="0" /></linearGradient></defs><path d="M0 128 C38 118, 54 120, 80 108 S126 118, 150 91 S192 102, 220 82 S256 87, 287 58 S330 68, 352 54 S395 61, 420 32 S460 45, 500 12 L500 150 L0 150 Z" fill="url(#chartFill)" /><path d="M0 128 C38 118, 54 120, 80 108 S126 118, 150 91 S192 102, 220 82 S256 87, 287 58 S330 68, 352 54 S395 61, 420 32 S460 45, 500 12" fill="none" stroke="#54d69b" strokeWidth="3" /></svg></div>
             <div className="preview-bottom"><span><Bot size={15} /> AI risk review active</span><span className="preview-secure"><ShieldCheck size={14} /> Protected</span></div>
-          </div>
+          </TiltCard>
           <div className="floating-card floating-card-risk"><span className="float-icon orange"><Sparkles size={15} /></span><div><strong>3 risks surfaced</strong><small>Evidence-linked review</small></div></div>
           <div className="floating-card floating-card-secure"><span className="float-icon green"><CheckCircle2 size={15} /></span><div><strong>Policy aligned</strong><small>Approval checkpoint cleared</small></div></div>
-        </div>
+        </ParallaxLayer>
       </section>
 
       <section className="landing-proof" aria-label="CovenX platform outcomes"><span>BUILT FOR HIGH-STAKES AGREEMENTS</span><div><strong>TRUST</strong><strong>CONTROL</strong><strong>VELOCITY</strong><strong>INTELLIGENCE</strong></div></section>

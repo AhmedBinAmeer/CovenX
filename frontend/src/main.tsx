@@ -23,7 +23,7 @@ import { Integrations } from './pages/Integrations';
 import { hasCapability } from './utils/permissions';
 import type { Capability } from './utils/permissions';
 import type { User } from './services/types';
-import { AnimatedPage } from './components/Motion';
+import { AnimatedPage, CursorGlow } from './components/Motion';
 import './index.css';
 
 type AuthState = { user: any | null; loading: boolean; login: (email: string, password: string) => Promise<void>; logout: () => void };
@@ -48,7 +48,7 @@ function App() {
   }, [user]);
   const navigate = (next: string) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const value = useMemo<AuthState>(() => ({ user, loading, login: async (email, password) => { const result = await endpoints.login({ email, password }); setAccessToken(result.accessToken); setUser(result.user); navigate('/'); }, logout: () => { setAccessToken(null); setUser(null); navigate('/login'); } }), [user, loading]);
-  return <AuthContext.Provider value={value}>{loading ? <div className="loading-screen"><div className="loading-orbit" /><img src="/covenx-logo-transparent.png" alt="CovenX" /><span>Preparing your secure workspace</span></div> : !user ? (path === '/login' ? <Login /> : <Landing onEnter={() => navigate('/login')} />) : <Layout path={path} setPath={navigate} onLogout={value.logout}><AnimatedPage routeKey={path}><Page path={path} navigate={navigate} user={user} /></AnimatedPage></Layout>}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}><CursorGlow />{loading ? <div className="loading-screen"><div className="loading-orbit" /><div className="loading-ring" /><img src="/covenx-logo-transparent.png" alt="CovenX" /><span>Preparing your secure workspace</span><div className="loading-progress" aria-hidden="true"><i /></div></div> : !user ? (path === '/login' ? <Login /> : <Landing onEnter={() => navigate('/login')} />) : <Layout path={path} setPath={navigate} onLogout={value.logout}><AnimatedPage routeKey={path}><Page path={path} navigate={navigate} user={user} /></AnimatedPage></Layout>}</AuthContext.Provider>;
 }
 
 function Page({ path, navigate, user }: { path: string; navigate: (next: string) => void; user: User }) {
