@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowRight,
@@ -38,41 +38,65 @@ const signals: Array<[string, string, string]> = [
 ];
 
 export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegister: () => void }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState<'hero' | 'platform' | 'intelligence' | 'security'>('hero');
+  const progressRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const promptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false;
+    const updateScroll = () => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollY / docHeight) * 100)) : 0;
-      setScrollProgress(progress);
-      setScrolled(scrollY > 24);
 
-      // Active section tracking
-      const platformEl = document.getElementById('platform');
-      const intelligenceEl = document.getElementById('intelligence');
-      const securityEl = document.getElementById('security');
+      if (progressRef.current) {
+        progressRef.current.style.width = `${progress}%`;
+      }
+      if (headerRef.current) {
+        headerRef.current.classList.toggle('is-scrolled', scrollY > 24);
+      }
+      if (promptRef.current) {
+        promptRef.current.classList.toggle('is-hidden', scrollY > 60);
+      }
+      ticking = false;
+    };
 
-      const pTop = platformEl?.getBoundingClientRect().top ?? 9999;
-      const iTop = intelligenceEl?.getBoundingClientRect().top ?? 9999;
-      const sTop = securityEl?.getBoundingClientRect().top ?? 9999;
-
-      if (sTop < 300) {
-        setActiveSection('security');
-      } else if (iTop < 300) {
-        setActiveSection('intelligence');
-      } else if (pTop < 300) {
-        setActiveSection('platform');
-      } else {
-        setActiveSection('hero');
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScroll);
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateScroll();
+
+    // High performance IntersectionObserver for section highlighting
+    const sections = ['platform', 'intelligence', 'security'];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id as any);
+          }
+        });
+        if (window.scrollY < 300) {
+          setActiveSection('hero');
+        }
+      },
+      { rootMargin: '-20% 0px -55% 0px', threshold: 0.05 }
+    );
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
+    };
   }, []);
 
   const scrollTo = (id: string) => {
@@ -94,10 +118,10 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
       </div>
 
       <div className="landing-plasma-system" aria-hidden="true">
-        <ParallaxLayer className="plasma-orb plasma-orb-emerald" depth={0.12} />
-        <ParallaxLayer className="plasma-orb plasma-orb-copper" depth={0.08} />
-        <ParallaxLayer className="plasma-orb plasma-orb-cyan" depth={0.15} />
-        <ParallaxLayer className="plasma-orb plasma-orb-indigo" depth={0.05} />
+        <div className="plasma-orb plasma-orb-emerald" />
+        <div className="plasma-orb plasma-orb-copper" />
+        <div className="plasma-orb plasma-orb-cyan" />
+        <div className="plasma-orb plasma-orb-indigo" />
       </div>
 
       <div className="landing-grid-interactive" aria-hidden="true" />
@@ -111,8 +135,8 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
       </div>
 
       {/* ── Strict Floating Elevated Capsule Navigation Bar ────────────── */}
-      <header className={`landing-nav-floating ${scrolled ? 'is-scrolled' : ''}`}>
-        <div className="landing-nav-progress" style={{ width: `${scrollProgress}%` }} />
+      <header ref={headerRef} className="landing-nav-floating">
+        <div ref={progressRef} className="landing-nav-progress" style={{ width: '0%' }} />
         <div className="landing-nav-inner">
           <button
             className="landing-brand"
@@ -244,7 +268,7 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
         </section>
 
         {/* Scroll Indicator Prompt */}
-        <div className={`scroll-explore-prompt ${scrolled ? 'is-hidden' : ''}`} onClick={() => scrollTo('platform')}>
+        <div ref={promptRef} className="scroll-explore-prompt" onClick={() => scrollTo('platform')}>
           <div className="scroll-indicator-mouse">
             <span className="mouse-wheel" />
           </div>
