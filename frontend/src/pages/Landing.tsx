@@ -14,7 +14,7 @@ const signals = [
   ['Renewal exposure', '$4.8M', 'Next 90 days'],
 ];
 
-export function Landing({ onEnter }: { onEnter: () => void }) {
+export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegister: () => void }) {
   return <div className="landing-page">
     <div className="landing-grid" aria-hidden="true" />
     <div className="landing-orb landing-orb-green" aria-hidden="true" />
@@ -27,7 +27,7 @@ export function Landing({ onEnter }: { onEnter: () => void }) {
       <nav className="landing-links" aria-label="Marketing navigation">
         <a href="#platform">Platform</a><a href="#security">Security</a><a href="#intelligence">Intelligence</a>
       </nav>
-      <button className="btn landing-nav-cta" onClick={onEnter}>Enter workspace <ArrowRight size={15} /></button>
+      <div className="landing-nav-actions"><button className="landing-text-link" onClick={onRegister}>Create workspace</button><button className="btn landing-nav-cta" onClick={onEnter}>Enter workspace <ArrowRight size={15} /></button></div>
     </header>
 
     <main>
@@ -36,7 +36,7 @@ export function Landing({ onEnter }: { onEnter: () => void }) {
           <div className="eyebrow landing-eyebrow"><span className="eyebrow-dot" /> Contract intelligence, secured</div>
           <h1 id="landing-title">Move every agreement forward <em>with confidence.</em></h1>
           <p className="landing-lede">CovenX is the enterprise Contract Lifecycle Management Platform for teams that need to create, review, approve, sign, monitor, renew, and archive agreements with intelligence and control.</p>
-          <div className="landing-actions"><button className="btn landing-primary" onClick={onEnter}>Open the enterprise workspace <ArrowRight size={17} /></button><a className="landing-text-link" href="#platform">Explore the platform <ChevronRight size={15} /></a></div>
+          <div className="landing-actions"><button className="btn landing-primary" onClick={onRegister}>Create your company workspace <ArrowRight size={17} /></button><button className="landing-text-link" onClick={onEnter}>Already have access? Sign in <ChevronRight size={15} /></button></div>
           <div className="landing-trust-row"><span><ShieldCheck size={15} /> Tenant-isolated by design</span><span><LockKeyhole size={15} /> Governed human review</span></div>
         </div>
         <ParallaxLayer className="landing-visual" depth={0.06} aria-label="CovenX contract operations preview">

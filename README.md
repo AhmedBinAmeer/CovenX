@@ -134,6 +134,14 @@ The detailed architecture is documented in [`docs/Architecture.md`](docs/Archite
 └── package.json             # Workspace commands
 ```
 
+## Company registration and onboarding
+
+New companies can create a tenant-isolated CovenX workspace from the public `/register` route. Registration provisions the organization, creates the first workspace administrator with the `super-admin` role, initializes the tenant RBAC set, starts a 14-day trial state, and signs the administrator into the onboarding wizard. The wizard captures company context and lets the administrator prepare team, governance, and integration setup before entering the main workspace.
+
+Returning users sign in with their work email, password, and workspace slug. Employees of an existing organization should be invited or provisioned through the organization’s identity provider rather than registering a new tenant. The public registration route is rate-limited, requires a 12-character password and terms consent, and never accepts a tenant ID or role selection from the browser.
+
+The current registration response marks the administrator as `emailVerified: false` and returns `emailVerificationRequired: true` so a production email-verification provider can be enforced when configured. The local onboarding path remains usable with the default mock email setup; production deployments should connect a transactional email provider and enforce verification before enabling sensitive tenant actions.
+
 ## Local development
 
 ### Prerequisites
@@ -203,7 +211,9 @@ The frontend workspace includes these primary routes:
 | `/workflows` | Approval workflow definitions |
 | `/users` | User administration |
 | `/audit` | Tenant-scoped audit history |
-| `/settings` | Profile and active-session security |
+| `/settings` | Security, profile, role context, and active-session administration |
+| `/register` | Public company workspace registration |
+| `/onboarding` | Initial organization setup wizard |
 
 The REST API is served under `/api/v1`. The complete endpoint contract is available in [`docs/API.md`](docs/API.md).
 

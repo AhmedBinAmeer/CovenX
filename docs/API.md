@@ -129,15 +129,29 @@ Authentication endpoints establish and maintain the user session. Login and refr
 
 ### POST `/auth/register`
 
-**Purpose:** Create a local user invitation or registration where tenant policy permits it.
-**Authentication:** Authenticated; public registration is disabled by default.
-**Permission:** `user:create` or a configured invitation capability.
+**Purpose:** Create a new CovenX company workspace and its first administrator.
+**Authentication:** None; public registration is rate-limited.
+**Permission:** None.
 
-**Request:** `{ email, password, firstName, lastName, roleIds?, departmentId?, businessUnitIds? }`. Password policy, email normalization, role scope, and tenant invitation policy are validated.
+**Request:** `{ companyName, workspaceSlug?, email, password, firstName, lastName, industry?, companySize?, contractVolume?, termsAccepted }`. The password must contain at least 12 characters, terms consent must be true, and the workspace slug may contain only lowercase letters, numbers, and hyphens.
 
-**Response:** `201` with a safe user resource and invitation/session status. Passwords and tokens are never returned.
+**Response:** `201` with `{ user, organization, accessToken, sessionId, emailVerificationRequired }`. The refresh token is delivered only through the HTTP-only cookie. The new organization starts in `onboarding` status with a 14-day trial state, a tenant-scoped RBAC set, and the registering user assigned the `super-admin` role.
 
-**Errors:** `VALIDATION_FAILED`, `DUPLICATE_RESOURCE`, `PERMISSION_DENIED`, `ROLE_SCOPE_DENIED`, `INVITATIONS_DISABLED`.
+**Security rules:** The request never accepts a tenant ID, role IDs, or organization owner ID. The server creates a new tenant identifier, bootstraps the organization’s RBAC roles, creates the first administrator, and writes an organization-registration audit event. Registration is protected by an IP/path rate limit.
+
+**Errors:** `VALIDATION_FAILED`, `WORKSPACE_SLUG_UNAVAILABLE`, `BOOTSTRAP_ROLE_MISSING`, `RATE_LIMITED`, `INTERNAL_ERROR`.
+
+### POST `/users`
+
+**Purpose:** Create a tenant-scoped internal user after an organization already exists.
+**Authentication:** Required.
+**Permission:** `user:create`.
+
+**Request:** `{ email, password, firstName, lastName, roleIds, departmentId?, businessUnitIds? }`. The server verifies that every role belongs to the caller’s tenant.
+
+**Response:** `201` with a safe user resource. Password hashes are never returned.
+
+**Errors:** `VALIDATION_FAILED`, `DUPLICATE_RESOURCE`, `ROLE_SCOPE_DENIED`, `PERMISSION_DENIED`.
 
 ### POST `/auth/login`
 
@@ -145,7 +159,7 @@ Authentication endpoints establish and maintain the user session. Login and refr
 **Authentication:** None; rate-limited.
 **Permission:** None.
 
-**Request:** `{ email, password, deviceLabel?, rememberMe? }`.
+**Request:** `{ email, password, workspaceSlug? }`. The workspace slug is required when the user is signing into a tenant that is not supplied by an existing trusted session context.
 
 **Response:** `200` with `{ user, accessToken, expiresAt, session }`. The refresh token is delivered only through the approved HTTP-only Secure cookie policy.
 
@@ -177,13 +191,33 @@ Authentication endpoints establish and maintain the user session. Login and refr
 
 ### GET `/auth/me`
 
-**Purpose:** Return the current safe user profile and effective authorization context.
+**Purpose:** Return the current safe user profile, organization, and effective authorization context.
 **Authentication:** Required.
 **Permission:** Authenticated session owner.
 
-**Response:** `200` with `{ user, roles, permissions, scope }`.
+**Response:** `200` with `{ user, organization, roles, permissions, scope }`.
 
 **Errors:** `AUTHENTICATION_REQUIRED`, `SESSION_REVOKED`.
+
+### GET `/onboarding`
+
+**Purpose:** Retrieve the current organization’s setup state.
+**Authentication:** Required.
+**Permission:** Authenticated session member.
+
+**Response:** `200` with the safe organization resource, including `status`, `plan`, `trial`, `profile`, and `onboarding.currentStep`/`completedSteps`.
+
+### PATCH `/onboarding`
+
+**Purpose:** Save an onboarding step or activate the organization after setup.
+**Authentication:** Required.
+**Permission:** `user:manage`.
+
+**Request:** `{ step: 'profile' | 'team' | 'governance' | 'integrations' | 'complete', data }`.
+
+**Response:** `200` with the updated organization resource. Completing the final step changes the organization from `onboarding` to `active` and records completion time.
+
+**Errors:** `VALIDATION_FAILED`, `ORGANIZATION_NOT_FOUND`, `PERMISSION_DENIED`.
 
 ## 3. User management APIs
 
@@ -193,7 +227,7 @@ All user administration requires `user:read`, `user:create`, `user:update`, or `
 |---|---|---|---|---|
 | `GET /users` | Search and list users | `q`, `status`, `roleId`, `departmentId`, `businessUnitId`, `limit`, `cursor`, `sort` | `200` user collection | `user:read` |
 | `GET /users/:id` | Retrieve a user | Path ID | `200` safe user resource | `user:read` plus scope |
-| `POST /auth/register` | Invite/create user | `email`, `password`, `firstName`, `lastName`, role IDs, organization scope | `201` user resource | `user:create` |
+| `POST /users` | Create internal user | `email`, `password`, `firstName`, `lastName`, role IDs, organization scope | `201` user resource | `user:create` |
 | `PATCH /users/:id` | Update profile, role, scope, or status | Allowlisted changed fields and concurrency token | `200` updated user | `user:update` or `user:manage` |
 | `DELETE /users/:id` | Deactivate user | Optional `reason` and `deactivateSessions` | `204` or `200` deactivation result | `user:manage` |
 

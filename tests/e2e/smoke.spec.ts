@@ -12,6 +12,16 @@ test('login route preserves the governed workspace entry', async ({ page }) => {
   await expect(page.getByText(/Welcome back/i)).toBeVisible();
   await expect(page.getByLabel(/Email/i)).toBeVisible();
   await expect(page.getByLabel(/Password/i)).toBeVisible();
+  await expect(page.getByRole('button', { name: /Create workspace/i })).toBeVisible();
+});
+
+test('company registration route explains isolated workspace creation', async ({ page }) => {
+  await page.goto('/register');
+  await expect(page.getByText(/Create your workspace/i)).toBeVisible();
+  await expect(page.getByLabel(/Company name/i)).toBeVisible();
+  await expect(page.getByLabel(/Work email/i)).toBeVisible();
+  await expect(page.getByLabel(/Password/i)).toBeVisible();
+  await expect(page.getByText(/isolated trial tenant/i)).toBeVisible();
 });
 
 test('authenticated shell smoke path can be exercised with a configured test session', async ({ page }) => {

@@ -27,9 +27,11 @@ const json = (body: unknown): RequestInit => ({ method: 'POST', body: JSON.strin
 const patch = (body: unknown): RequestInit => ({ method: 'PATCH', body: JSON.stringify(body) });
 
 export const endpoints = {
-  login: (body: unknown) => request<{ accessToken: string; user: User }>('/auth/login', json(body)),
-  register: (body: unknown) => request<{ accessToken: string; user: User }>('/auth/register', json(body)),
-  me: () => request<{ user: User; roles: any[]; permissions: string[] }>('/auth/me'),
+  login: (body: unknown) => request<{ accessToken: string; user: User; organization?: any }>('/auth/login', json(body)),
+  register: (body: unknown) => request<{ accessToken: string; user: User; organization: any; emailVerificationRequired: boolean }>('/auth/register', json(body)),
+  me: () => request<{ user: User; roles: any[]; permissions: string[]; organization?: any }>('/auth/me'),
+  onboarding: () => request<any>('/onboarding'),
+  updateOnboarding: (body: unknown) => request<any>('/onboarding', patch(body)),
   logout: () => request<void>('/auth/logout', json({})),
   sessions: () => request<Session[]>('/auth/sessions'),
   revokeSession: (id: string) => request<void>(`/auth/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
