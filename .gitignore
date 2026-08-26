@@ -24,3 +24,7 @@ logs/
 .DS_Store
 Thumbs.db
 *.swp
+
+# Browser and load-test artifacts
+playwright-report/
+test-results/

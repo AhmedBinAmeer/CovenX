@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "description": "CovenX Enterprise Contract Lifecycle Management Platform",
-  "workspaces": ["frontend", "backend"],
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "dev": "concurrently -k \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dev:backend": "npm run dev --workspace=@covenx/backend",
@@ -21,14 +24,18 @@
     "lint:backend": "eslint backend/src backend/tests",
     "lint:frontend": "eslint frontend/src",
     "format:check": "prettier --check .",
-    "verify:indexes": "npm run verify-indexes --workspace=@covenx/backend"
+    "verify:indexes": "npm run verify-indexes --workspace=@covenx/backend",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@playwright/test": "^1.62.1",
     "concurrently": "^9.2.1",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "typescript-eslint": "^8.42.0"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }
