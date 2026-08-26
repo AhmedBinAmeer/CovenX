@@ -1,4 +1,4 @@
-import type { ApiError, ApprovalTask, Contract, ContractIntelligence, ContractVersion, DocumentRecord, Id, NotificationRecord, Obligation, Paginated, Session, User } from './types';
+import { ApiError, ApprovalTask, CollaborationComment, Contract, ContractIntelligence, ContractVersion, DocumentRecord, Id, NotificationRecord, Obligation, Paginated, Session, User, VersionComparison } from './types';
 
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/v1';
 const browserStorage = typeof window !== 'undefined' ? window.localStorage : null;
@@ -60,6 +60,11 @@ export const endpoints = {
   askContract: (id: Id, body: unknown) => request<ContractIntelligence>(`/contracts/${id}/intelligence/ask`, json(body)),
   reviewIntelligence: (id: Id, body: unknown) => request<ContractIntelligence>(`/intelligence/${id}/review`, json(body)),
   createContractVersion: (id: Id, body: unknown) => request<ContractVersion>(`/contracts/${id}/versions`, json(body)),
+  compareContractVersions: (id: Id, fromVersionId: Id, toVersionId: Id) => request<VersionComparison>(`/contracts/${id}/compare?fromVersionId=${encodeURIComponent(fromVersionId)}&toVersionId=${encodeURIComponent(toVersionId)}`),
+  contractComments: (id: Id, versionId?: Id) => request<CollaborationComment[]>(`/contracts/${id}/comments${versionId ? `?versionId=${encodeURIComponent(versionId)}` : ''}`),
+  createContractComment: (id: Id, body: unknown) => request<CollaborationComment>(`/contracts/${id}/comments`, json(body)),
+  createContractRedline: (id: Id, body: unknown) => request<{ contract: Contract; version: ContractVersion }>(`/contracts/${id}/redlines`, json(body)),
+  resolveComment: (id: Id, version: number) => request<CollaborationComment>(`/comments/${id}/resolve`, json({ version })),
   contractApprovals: (id: Id) => request<ApprovalTask[]>(`/contracts/${id}/approvals`),
   requestSignature: (id: Id, body: unknown) => request<any>(`/contracts/${id}/signature/request`, json(body)),
   signatures: (id: Id) => request<any[]>(`/contracts/${id}/signatures`),

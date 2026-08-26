@@ -271,3 +271,16 @@ tbody tr:hover td:first-child { box-shadow: inset 3px 0 #1d9365; }
 .intelligence-question:focus { border-color: #49a982; box-shadow: 0 0 0 4px rgba(29,147,101,.1); }
 .intelligence-hero .notice { margin-top: 14px; }
 @media (max-width: 620px) { .intelligence-review, .intelligence-item { align-items: stretch; flex-direction: column; } .intelligence-review > div { width: 100%; } .intelligence-review .btn { flex: 1; } }
+
+/* CovenX collaborative negotiation workspace */
+.diff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.diff-pane { min-height: 230px; max-height: 420px; overflow: auto; margin: 8px 0 0; padding: 14px; border: 1px solid #e8eef0; border-radius: 14px; background: #fbfcfc; white-space: pre-wrap; font: 500 12px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.diff-added { display: block; color: #116c49; background: #e5f7ed; }
+.diff-removed { display: block; color: #a03a42; background: #fff0f0; text-decoration: line-through; }
+.diff-equal { display: block; color: #52636b; }
+.editor { min-height: 300px; resize: vertical; font: 500 13px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.comment { margin-top: 10px; padding: 12px; border: 1px solid #e4ecef; border-radius: 12px; background: #fff; animation: covenx-fade-up 180ms var(--ease-out, ease-out); }
+.comment p { margin: 8px 0; color: #33454c; font-size: 13px; line-height: 1.55; }
+.comment-resolved { opacity: .65; background: #f7faf9; }
+@media (max-width: 800px) { .diff-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .comment { animation: none; } }

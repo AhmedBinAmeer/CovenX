@@ -232,6 +232,20 @@ Contract resources implement the lifecycle state machine documented in the Syste
 | `GET /contracts/:id/versions` | List versions | `state`, pagination | `200` version collection | `contract:read` |
 | `POST /contracts/:id/versions` | Create new revision | `changeSummary`, content/document refs, `baseVersionId` | `201` contract version | `contract:update` |
 
+### Collaborative negotiation endpoints
+
+CovenX collaborative negotiation keeps every redline as a new immutable `ContractVersion`. Signed, active, monitoring, renewal, and archived contracts are locked against redline creation. Draft and review contracts require an optimistic contract version token, so concurrent edits fail safely with `VERSION_CONFLICT` rather than overwriting another reviewer’s work.
+
+| Method and path | Purpose | Request fields | Success | Required permission |
+|---|---|---|---|---|
+| `GET /contracts/:id/compare` | Compare two tenant-scoped contract versions | `fromVersionId`, `toVersionId` | `200` side-by-side diff blocks and change summary | `contract:read` |
+| `POST /contracts/:id/redlines` | Create a governed redline version | `baseVersionId`, `expectedContractVersion`, `changeSummary`, `operations[]` | `201` updated contract and immutable version | `contract:collaborate` |
+| `GET /contracts/:id/comments` | List anchored discussion threads | `versionId?`, `status?` | `200` comment collection | `contract:read` |
+| `POST /contracts/:id/comments` | Add an anchored comment or reply | `versionId`, `parentId?`, `body`, `anchor`, `mentions[]?` | `201` comment | `contract:comment` |
+| `POST /comments/:id/resolve` | Resolve a discussion thread | `{ version }` | `200` resolved comment | `contract:resolve-comment` |
+
+Redline operations are explicit `insert`, `delete`, or `replace` operations with bounded character anchors. Mentions are validated against active users in the current tenant and generate notification events without exposing contract content beyond the bounded message preview. Collaboration events include `ContractRedlineCreated.v1`, `ContractCommentCreated.v1`, and `ContractCommentResolved.v1`; Socket.IO broadcasts are tenant- and contract-room scoped.
+
 Contract states are `draft`, `review`, `approval`, `signature`, `active`, `monitoring`, `renewal`, and `archived`. `submit-review` is valid only from Draft with required metadata and a current version. Archive is allowed only by policy for terminated, expired, or otherwise eligible contracts. Renewal creates a governed renewal draft or operation and never mutates the historical signed version.
 
 Lifecycle errors include `CONTRACT_NOT_FOUND`, `CONTRACT_VERSION_NOT_FOUND`, `INVALID_LIFECYCLE_TRANSITION`, `REQUIRED_METADATA_MISSING`, `WORKFLOW_NOT_SATISFIED`, `VERSION_CONFLICT`, `CONTRACT_LOCKED`, and `RESOURCE_SCOPE_DENIED`.
