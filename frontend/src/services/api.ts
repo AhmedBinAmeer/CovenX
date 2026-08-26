@@ -104,4 +104,12 @@ export const endpoints = {
   reject: (id: Id, body: unknown) => request<any>(`/approvals/${id}/reject`, json(body)),
   delegateApproval: (id: Id, body: unknown) => request<any>(`/approvals/${id}/delegate`, json(body)),
   audit: (query = '') => request<any[] | Paginated<any>>(`/audit${query ? `?${query}` : ''}`),
+  intakeQuestionnaires: (contractType = '') => request<any[]>(`/intake/questionnaires${contractType ? `?contractType=${encodeURIComponent(contractType)}` : ''}`),
+  intakeRequests: (query = '') => request<any[]>(`/intake/requests${query ? `?${query}` : ''}`),
+  createIntakeRequest: (body: unknown) => request<any>('/intake/requests', json(body)),
+  convertIntakeRequest: (id: Id, body: unknown = {}) => request<any>(`/intake/requests/${id}/convert`, json(body)),
+  integrations: () => request<any[]>('/integrations'),
+  createIntegration: (body: unknown) => request<any>('/integrations', json(body)),
+  updateIntegration: (id: Id, body: unknown) => request<any>(`/integrations/${id}`, patch(body)),
+  testIntegration: (id: Id) => request<any>(`/integrations/${id}/test`, json({})),
 };

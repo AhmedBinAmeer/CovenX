@@ -4,7 +4,8 @@ import { verifyAccess } from './auth.js';
 import { Contract } from '../models/index.js';
 
 export function attachRealtime(server: HttpServer) {
-  const io = new Server(server, { cors: { origin: '*', credentials: false } });
+  const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:5173').split(',').map((value) => value.trim()).filter(Boolean);
+  const io = new Server(server, { cors: { origin: allowedOrigins, credentials: true } });
   io.use((socket, next) => { try { const token = String(socket.handshake.auth?.token ?? socket.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, ''); const auth = verifyAccess(token); socket.data.auth = auth; next(); } catch { next(new Error('AUTHENTICATION_REQUIRED')); } });
   io.on('connection', (socket) => { const auth = socket.data.auth; socket.join(`tenant:${auth.tenantId}`); socket.join(`user:${auth.userId}`); socket.on('contract:join', async (contractId: string, callback?: (result: any) => void) => { const allowed = await Contract.exists({ _id: contractId, tenantId: auth.tenantId }); if (allowed) socket.join(`contract:${contractId}`); callback?.({ allowed: Boolean(allowed) }); }); socket.on('contract:leave', (contractId: string) => socket.leave(`contract:${contractId}`)); });
   return io;

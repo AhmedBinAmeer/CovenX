@@ -506,3 +506,22 @@ Performance tests cover contract search, dashboard aggregation, approval inboxes
 [2]: ./Architecture.md "CovenX System Architecture Document"
 [3]: ./Database.md "CovenX Database Design Document"
 [4]: ../README.md "CovenX repository README and engineering foundation"
+
+
+## Enterprise hardening additions
+
+### Contract intake portal
+
+`GET /api/v1/intake/questionnaires` returns published, tenant-scoped questionnaires. `POST /api/v1/intake/questionnaires` creates a versioned questionnaire for authorized operations users. `GET /api/v1/intake/requests` lists tenant-scoped requests, and `POST /api/v1/intake/requests` validates required answers before creating a request. Authorized operations users can call `POST /api/v1/intake/requests/:id/convert` to create a draft contract and immutable initial version from a request.
+
+Required permissions are `intake:read`, `intake:create`, and `intake:manage`. Questionnaire answers are stored with the questionnaire version that validated them. Intake conversion creates an audit event and publishes `IntakeRequestSubmitted.v1` for downstream automation.
+
+### Integration registry and webhooks
+
+`GET /api/v1/integrations` returns redacted tenant-scoped integration records. `POST /api/v1/integrations` stores provider configuration and encrypts optional secrets with AES-256-GCM using `INTEGRATION_ENCRYPTION_KEY`. Secrets are never returned to the frontend. `PATCH /api/v1/integrations/:id` uses an optimistic `version` field, and `POST /api/v1/integrations/:id/test` performs a configuration health check.
+
+Supported provider types are `salesforce`, `slack`, and `docusign`. Provider credentials and external account choices remain environment/configuration dependent. `POST /api/v1/webhooks/:provider` verifies a provider signature, rejects stale Slack timestamps, deduplicates `externalEventId`, stores a tenant-scoped webhook event, and publishes `IntegrationWebhookReceived.v1`.
+
+### Durable worker runtime
+
+The backend worker runtime is controlled by `WORKER_ENABLED`, `WORKER_POLL_INTERVAL_MS`, and `WORKER_SCHEDULE_INTERVAL_MS`. It processes recoverable outbox delivery and scheduled reminder work and shuts down with the API process. Provider-specific delivery and high-volume document embedding jobs should be attached to the same durable queue boundary before production scale validation.

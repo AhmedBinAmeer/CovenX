@@ -14,6 +14,7 @@ import { observeRequest, metricsSnapshot } from './src/services/observability.js
 import { attachRealtime } from './src/services/realtime.js';
 import { storageProvider } from './src/services/storage.js';
 import { providerHealth } from './src/services/health.js';
+import { startWorkerRuntime, stopWorkerRuntime, workerRuntimeStatus } from './src/services/workerRuntime.js';
 
 export const app = express();
 app.disable('x-powered-by');
@@ -24,14 +25,14 @@ app.use(distributedRateLimit('mutations', config.RATE_LIMIT_WINDOW_MS, config.RA
 app.use(cookieParser());
 app.use((req, res, next) => { req.requestId = req.header('x-request-id') ?? crypto.randomUUID(); const started = Date.now(); res.on('finish', () => observeRequest({ requestId: req.requestId, tenantId: req.auth?.tenantId, userId: req.auth?.userId, route: req.path, status: res.statusCode, latencyMs: Date.now() - started })); next(); });
 app.get('/health/live', (_req, res) => res.json({ success: true, data: { status: 'ok' } }));
-app.get('/metrics', (_req, res) => res.json({ success: true, data: metricsSnapshot() }));
+app.get('/metrics', (_req, res) => res.json({ success: true, data: { ...metricsSnapshot(), worker: workerRuntimeStatus() } }));
 app.get('/health/ready', async (_req, res) => { const status = await providerHealth(); const ready = status.database && status.storageProvider && status.emailProvider && status.searchProvider; res.status(ready ? 200 : 503).json({ success: ready, data: { ...status, application: 'ready' } }); });
 app.use('/api/v1', api);
 app.use(notFound);
 app.use(errorHandler);
 
 export let realtimeServer: ReturnType<typeof attachRealtime> | null = null;
-export async function shutdown() { await disconnectInfrastructure(); }
+export async function shutdown() { await stopWorkerRuntime(); await disconnectInfrastructure(); }
 if (process.env.NODE_ENV !== 'test') {
-  connectInfrastructure().then(async () => { await verifyIndexes(); if (process.env.SEED_RBAC === 'true') await seedRbac('000000000000000000000001'); const server = createServer(app); realtimeServer = attachRealtime(server); server.listen(config.PORT, () => console.log(`CovenX API listening on ${config.PORT}`)); }).catch((error) => { console.error('Infrastructure startup failed', error); process.exit(1); });
+  connectInfrastructure().then(async () => { await verifyIndexes(); if (process.env.SEED_RBAC === 'true') await seedRbac('000000000000000000000001'); const server = createServer(app); realtimeServer = attachRealtime(server); server.listen(config.PORT, () => { if (config.WORKER_ENABLED) startWorkerRuntime({ pollIntervalMs: config.WORKER_POLL_INTERVAL_MS, scheduleIntervalMs: config.WORKER_SCHEDULE_INTERVAL_MS }); console.log(`CovenX API listening on ${config.PORT}`); }); }).catch((error) => { console.error('Infrastructure startup failed', error); process.exit(1); });
 }

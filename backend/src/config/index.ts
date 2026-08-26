@@ -34,7 +34,11 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60000),
-  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120)
+  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
+  WORKER_ENABLED: z.coerce.boolean().default(true),
+  WORKER_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(2000),
+  WORKER_SCHEDULE_INTERVAL_MS: z.coerce.number().int().positive().default(900000),
+  INTEGRATION_ENCRYPTION_KEY: z.string().optional()
 });
 
 export const config = schema.parse(process.env);

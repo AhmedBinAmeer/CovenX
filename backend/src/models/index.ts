@@ -70,4 +70,19 @@ NotificationPreference.schema.index({ tenantId: 1, userId: 1 }, { unique: true }
 export const DashboardProjection = model('DashboardProjection', new Schema({ ...base, projectionType: { type: String, required: true }, scope: Schema.Types.Mixed, metrics: Schema.Types.Mixed, generatedAt: { type: Date, default: Date.now }, dataAsOf: Date, version: { type: Number, default: 1 } }, { timestamps: true }));
 DashboardProjection.schema.index({ tenantId: 1, projectionType: 1, 'scope.key': 1 }, { unique: true });
 
+export const IntakeRequest = model('IntakeRequest', new Schema({ ...base, requesterId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, title: { type: String, required: true }, contractType: { type: String, required: true }, status: { type: String, enum: ['submitted', 'triage', 'in_progress', 'converted', 'rejected', 'cancelled'], default: 'submitted' }, questionnaireVersion: { type: Number, default: 1 }, answers: { type: Schema.Types.Mixed, default: {} }, attachments: [{ type: Schema.Types.ObjectId, ref: 'Document' }], assignedTo: Schema.Types.ObjectId, targetTemplateId: Schema.Types.ObjectId, targetWorkflowId: Schema.Types.ObjectId, priority: { type: String, enum: ['low', 'normal', 'high', 'urgent'], default: 'normal' }, dueAt: Date, conversion: Schema.Types.Mixed, version: { type: Number, default: 1 } }, { timestamps: true }));
+IntakeRequest.schema.index({ tenantId: 1, requesterId: 1, status: 1, createdAt: -1 });
+IntakeRequest.schema.index({ tenantId: 1, status: 1, priority: 1, createdAt: -1 });
+
+export const IntakeQuestionnaire = model('IntakeQuestionnaire', new Schema({ ...base, contractType: { type: String, required: true }, version: { type: Number, default: 1 }, status: { type: String, enum: ['draft', 'published', 'retired'], default: 'draft' }, questions: [{ key: String, label: String, type: String, required: Boolean, options: [String], visibleWhen: Schema.Types.Mixed }], routingRules: [Schema.Types.Mixed], ownerId: Schema.Types.ObjectId }, { timestamps: true }));
+IntakeQuestionnaire.schema.index({ tenantId: 1, contractType: 1, status: 1, version: -1 });
+
+export const Integration = model('Integration', new Schema({ ...base, type: { type: String, enum: ['salesforce', 'slack', 'docusign'], required: true }, provider: { type: String, required: true }, status: { type: String, enum: ['draft', 'connected', 'degraded', 'disabled'], default: 'draft' }, displayName: { type: String, required: true }, config: { type: Schema.Types.Mixed, default: {} }, secretCiphertext: { type: String, select: false }, secretIv: { type: String, select: false }, secretTag: { type: String, select: false }, lastHealthCheckAt: Date, lastError: String, version: { type: Number, default: 1 } }, { timestamps: true }));
+Integration.schema.index({ tenantId: 1, type: 1, provider: 1 }, { unique: true });
+Integration.schema.index({ tenantId: 1, status: 1, updatedAt: -1 });
+
+export const WebhookEvent = model('WebhookEvent', new Schema({ ...base, provider: { type: String, required: true }, externalEventId: { type: String, required: true }, eventType: { type: String, required: true }, signatureValid: { type: Boolean, required: true }, status: { type: String, enum: ['received', 'processed', 'ignored', 'failed'], default: 'received' }, payloadHash: { type: String, required: true }, receivedAt: { type: Date, default: Date.now }, processedAt: Date, error: String }, { timestamps: true }));
+WebhookEvent.schema.index({ tenantId: 1, provider: 1, externalEventId: 1 }, { unique: true });
+WebhookEvent.schema.index({ provider: 1, receivedAt: -1 });
+
 export function asId(value: string): mongoose.Types.ObjectId { return new mongoose.Types.ObjectId(value); }
