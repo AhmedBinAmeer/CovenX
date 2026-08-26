@@ -18,6 +18,7 @@ import { ContractDetail } from './pages/ContractDetail';
 import { Intelligence } from './pages/Intelligence';
 import { Negotiation } from './pages/Negotiation';
 import { Governance } from './pages/Governance';
+import { Users } from './pages/Users';
 import { Dashboard } from './pages/Dashboard';
 import { NotFound } from './pages/NotFound';
 import { Intake } from './pages/Intake';
@@ -80,7 +81,7 @@ function Page({ path, navigate, user }: { path: string; navigate: (next: string)
   if (path === '/templates') return <Governance section="templates" />;
   if (path === '/clauses') return <Governance section="clauses" />;
   if (path === '/workflows') return <Governance section="workflows" />;
-  if (path === '/users') return <Governance section="users" />;
+  if (path === '/users') return <Users />;
   if (path === '/audit') return <Governance section="audit" />;
   return <NotFound navigate={navigate} />;
 }

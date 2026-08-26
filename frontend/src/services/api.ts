@@ -36,6 +36,7 @@ export const endpoints = {
   sessions: () => request<Session[]>('/auth/sessions'),
   revokeSession: (id: string) => request<void>(`/auth/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   users: (query = '') => request<Paginated<User> | User[]>(`/users${query ? `?${query}` : ''}`),
+  createUser: (body: unknown) => request<User>('/users', json(body)),
   user: (id: Id) => request<User>(`/users/${id}`),
   updateUser: (id: Id, body: unknown) => request<User>(`/users/${id}`, patch(body)),
   deleteUser: (id: Id) => request<void>(`/users/${id}`, { method: 'DELETE' }),

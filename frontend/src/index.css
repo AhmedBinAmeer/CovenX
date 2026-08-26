@@ -918,3 +918,12 @@ tbody tr:hover td { color: #173149; }
 @media (max-width: 820px) { .register-layout { grid-template-columns: 1fr; } .register-aside { min-height: auto; gap: 38px; } .register-aside-copy { margin: 12px 0 0; } .register-aside-copy h1 { font-size: clamp(36px, 11vw, 58px); } }
 @media (max-width: 620px) { .landing-nav-actions { gap: 8px; } .landing-nav-actions .landing-text-link { display: none; } .register-topline { align-items: flex-start; flex-direction: column-reverse; } .onboarding-progress { grid-template-columns: repeat(2, 1fr); } .onboarding-choice { grid-template-columns: auto 1fr; } .onboarding-choice .btn { grid-column: 1 / -1; justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .register-card, .onboarding-intro, .onboarding-card, .onboarding-progress button { animation: none !important; transition: none !important; } }
+
+
+/* ── Users and roles access management ────────────────────────────────────── */
+.access-stats { margin-bottom: 18px; }
+.user-create-panel { margin-bottom: 18px; animation: covenx-scale-reveal .4s var(--ease-out) both; }
+.form-actions { display: flex; justify-content: flex-end; gap: 9px; width: 100%; }
+.table-subtext { display: block; margin-top: 3px; color: #91a0a9; font-size: 10px; }
+.status-muted { color: #778a96; background: #eef2f3; border-color: #e0e6e8; }
+@media (max-width: 700px) { .access-stats { grid-template-columns: 1fr; } .form-actions { justify-content: stretch; } .form-actions .btn { flex: 1; justify-content: center; } }
