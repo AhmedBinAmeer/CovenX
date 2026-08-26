@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
-import { ArrowRight, Building2, ChevronLeft, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Building2, ChevronLeft, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
 import { useAuth } from '../main';
+import { TiltCard, Reveal } from '../components/Motion';
 
 export function Login({ navigate }: { navigate: (path: string) => void }) {
   const { login } = useAuth();
@@ -9,6 +10,121 @@ export function Login({ navigate }: { navigate: (path: string) => void }) {
   const [workspaceSlug, setWorkspaceSlug] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const submit = async (event: FormEvent) => { event.preventDefault(); setBusy(true); setError(''); try { await login(email, password, workspaceSlug || undefined); } catch (e: any) { setError(e.message ?? 'Unable to sign in'); } finally { setBusy(false); } };
-  return <div className="login-layout"><section className="login-hero"><div><button className="brand-button login-brand" onClick={() => navigate('/')} aria-label="CovenX home"><div className="brand-badge"><img className="brand-badge-logo" src="/covenx-logo-transparent.png" alt="CovenX" /></div><div className="brand-copy"><strong>CovenX</strong><small>Enterprise contract intelligence</small></div></button><div className="login-hero-copy"><div className="eyebrow">Contract intelligence, secured</div><h1>Move every agreement forward with confidence.</h1><p className="login-hero-lede">A trusted enterprise workspace for creating, reviewing, approving, signing, monitoring, and renewing contracts.</p></div></div><div className="login-footer-meta"><span><ShieldCheck size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} /> Secure by design</span><span>© CovenX Enterprise</span></div></section><section className="login-form-section"><form onSubmit={submit} className="card login-card"><div className="login-card-topline"><button type="button" className="text-button" onClick={() => navigate('/')}><ChevronLeft size={14} /> Home</button><button type="button" className="text-button" onClick={() => navigate('/register')}><Building2 size={14} /> Create workspace</button></div><div className="eyebrow">Welcome back</div><h2>Sign in to CovenX</h2><p className="subtitle" style={{ lineHeight: 1.6 }}>Access your enterprise contract workspace.</p><div className="login-fields"><div className="field"><label htmlFor="email">Work email</label><input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" /></div><div className="field"><label htmlFor="workspace-slug">Workspace slug <span>optional for your first session</span></label><input id="workspace-slug" autoComplete="organization" value={workspaceSlug} onChange={(e) => setWorkspaceSlug(e.target.value.toLowerCase())} placeholder="e.g. northstar" /></div><div className="field"><label htmlFor="password">Password</label><div className="search" style={{ width: '100%' }}><LockKeyhole size={15} /><input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" /></div></div>{error && <div className="notice">{error}</div>}<button className="btn btn-primary" disabled={busy}>{busy ? 'Signing in…' : <>Continue securely <ArrowRight size={16} /></>}</button></div><div className="login-security-note"><ShieldCheck size={15} /><span>Your session is protected with short-lived access tokens and rotating refresh credentials.</span></div><div className="login-create-note">New to CovenX? <button type="button" onClick={() => navigate('/register')}>Create a secure company workspace</button></div></form></section></div>;
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    try {
+      await login(email, password, workspaceSlug || undefined);
+    } catch (e: any) {
+      setError(e.message ?? 'Unable to sign in');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="login-layout">
+      <section className="login-hero">
+        <Reveal direction="up" delay={50}>
+          <div>
+            <button className="brand-button login-brand" onClick={() => navigate('/')} aria-label="CovenX home">
+              <div className="brand-badge">
+                <img className="brand-badge-logo" src="/covenx-logo-transparent.png" alt="CovenX" />
+              </div>
+              <div className="brand-copy">
+                <strong>CovenX</strong>
+                <small>Enterprise contract intelligence</small>
+              </div>
+            </button>
+            <div className="login-hero-copy">
+              <div className="eyebrow"><Sparkles size={13} /> Contract intelligence, secured</div>
+              <h1>Move every agreement forward with confidence.</h1>
+              <p className="login-hero-lede">
+                A trusted enterprise workspace for creating, reviewing, approving, signing, monitoring, and renewing contracts.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+        <div className="login-footer-meta">
+          <span><ShieldCheck size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} /> Secure by design</span>
+          <span>© CovenX Enterprise</span>
+        </div>
+      </section>
+
+      <section className="login-form-section">
+        <Reveal direction="scale" delay={100}>
+          <TiltCard maxTilt={2.5}>
+            <form onSubmit={submit} className="card login-card">
+              <div className="login-card-topline">
+                <button type="button" className="text-button" onClick={() => navigate('/')}>
+                  <ChevronLeft size={14} /> Home
+                </button>
+                <button type="button" className="text-button" onClick={() => navigate('/register')}>
+                  <Building2 size={14} /> Create workspace
+                </button>
+              </div>
+              <div className="eyebrow">Welcome back</div>
+              <h2>Sign in to CovenX</h2>
+              <p className="subtitle" style={{ lineHeight: 1.6 }}>Access your enterprise contract workspace.</p>
+              <div className="login-fields">
+                <div className="field">
+                  <label htmlFor="email">Work email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="workspace-slug">Workspace slug <span>optional for your first session</span></label>
+                  <input
+                    id="workspace-slug"
+                    autoComplete="organization"
+                    value={workspaceSlug}
+                    onChange={(e) => setWorkspaceSlug(e.target.value.toLowerCase())}
+                    placeholder="e.g. northstar"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="password">Password</label>
+                  <div className="search" style={{ width: '100%' }}>
+                    <LockKeyhole size={15} />
+                    <input
+                      id="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                </div>
+                {error && <div className="notice">{error}</div>}
+                <button className="btn btn-primary" disabled={busy}>
+                  {busy ? 'Signing in…' : <>Continue securely <ArrowRight size={16} /></>}
+                </button>
+              </div>
+              <div className="login-security-note">
+                <ShieldCheck size={15} />
+                <span>Your session is protected with short-lived access tokens and rotating refresh credentials.</span>
+              </div>
+              <div className="login-create-note">
+                New to CovenX?{' '}
+                <button type="button" onClick={() => navigate('/register')}>
+                  Create a secure company workspace
+                </button>
+              </div>
+            </form>
+          </TiltCard>
+        </Reveal>
+      </section>
+    </div>
+  );
 }

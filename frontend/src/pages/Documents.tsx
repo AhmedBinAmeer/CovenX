@@ -1,5 +1,184 @@
 import { useEffect, useState } from 'react';
-import { Download, FileCheck2, Lock, RefreshCw, Search, Trash2 } from 'lucide-react';
+import { Download, FileCheck2, Lock, RefreshCw, Search, Sparkles, Trash2 } from 'lucide-react';
 import { endpoints, listItems } from '../services/api';
 import { useRealtimeRefresh } from '../hooks/useRealtimeRefresh';
-export function Documents() { const [items, setItems] = useState<any[]>([]); const [query, setQuery] = useState(''); const [error, setError] = useState(''); const load = async () => { try { const value = await endpoints.documents('all'); setItems(listItems(value as any)); } catch (e: any) { setError(e.message); } }; useEffect(() => { load(); }, []); useRealtimeRefresh(['contract.updated', 'obligation.updated'], load); const download = async (id: string) => { try { const value = await endpoints.downloadDocument(id); window.open(value.url, '_blank', 'noopener,noreferrer'); } catch (e: any) { setError(e.message); } }; const index = async (doc: any) => { try { await endpoints.indexDocument(doc._id); setItems(items.map((item) => item._id === doc._id ? { ...item, metadata: { ...item.metadata, indexStatus: 'indexed' } } : item)); } catch (e: any) { setError(e.message); } }; const remove = async (doc: any) => { if (!window.confirm(`Delete ${doc.fileName}?`)) return; try { await endpoints.deleteDocument(doc._id, doc.version); setItems(items.filter((x) => x._id !== doc._id)); } catch (e: any) { setError(e.message); } }; const filtered = items.filter((d) => `${d.fileName} ${d.classification} ${d.mimeType} ${d.contractId}`.toLowerCase().includes(query.toLowerCase())); return <><div className="page-heading"><div><div className="eyebrow">Secure repository</div><h1>Documents</h1><p className="subtitle">Private, scanned contract files with controlled access.</p></div><div className="badge badge-blue"><Lock size={12} /> Private storage</div></div><div className="notice" style={{ marginBottom: 18 }}>Documents are served through short-lived authorized URLs. Uploads are checksum-verified and malware-scanned before download.</div>{error && <div className="notice" style={{ marginBottom: 18 }}>{error}</div>}<section className="card table-card"><div className="table-toolbar"><form className="search" onSubmit={(e) => e.preventDefault()}><Search size={16} /><input aria-label="Search documents" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search file, classification, or contract ID" /></form><button className="icon-button" aria-label="Refresh documents" onClick={load}><RefreshCw size={15} /></button></div><div className="table-scroll">{filtered.length === 0 ? <div className="empty"><FileCheck2 size={25} style={{ display: 'block', margin: '0 auto 12px', color: '#1d9365' }} />No document records in this view.</div> : <table><thead><tr><th>File</th><th>Contract</th><th>Type</th><th>Scan</th><th>Uploaded</th><th /></tr></thead><tbody>{filtered.map((d: any) => <tr key={d._id}><td><strong>{d.fileName}</strong><div style={{ color: '#8293a0', fontSize: 11, marginTop: 4 }}>{d.classification} · {Math.ceil(d.sizeBytes / 1024)} KB</div></td><td>{d.contractId}</td><td>{d.mimeType}</td><td><span className={`badge badge-${d.scanStatus === 'clean' ? 'green' : d.scanStatus === 'infected' || d.scanStatus === 'failed' ? 'red' : 'orange'}`}>{d.scanStatus}</span></td><td>{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '—'}</td><td style={{ display: 'flex', gap: 6 }}><button className="icon-button" aria-label={`Download ${d.fileName}`} disabled={d.scanStatus !== 'clean'} onClick={() => download(d._id)}><Download size={15} /></button><button className="icon-button" aria-label={`Index ${d.fileName}`} disabled={d.scanStatus !== 'clean'} onClick={() => index(d)}><Search size={15} /></button><button className="icon-button" aria-label={`Delete ${d.fileName}`} onClick={() => remove(d)}><Trash2 size={15} /></button></td></tr>)}</tbody></table>}</div></section></>; }
+import { TiltCard, Reveal } from '../components/Motion';
+
+export function Documents() {
+  const [items, setItems] = useState<any[]>([]);
+  const [query, setQuery] = useState('');
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    try {
+      const value = await endpoints.documents('all');
+      setItems(listItems(value as any));
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+  useRealtimeRefresh(['contract.updated', 'obligation.updated'], load);
+
+  const download = async (id: string) => {
+    try {
+      const value = await endpoints.downloadDocument(id);
+      window.open(value.url, '_blank', 'noopener,noreferrer');
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  const index = async (doc: any) => {
+    try {
+      await endpoints.indexDocument(doc._id);
+      setItems(
+        items.map((item) =>
+          item._id === doc._id
+            ? { ...item, metadata: { ...item.metadata, indexStatus: 'indexed' } }
+            : item
+        )
+      );
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  const remove = async (doc: any) => {
+    if (!window.confirm(`Delete ${doc.fileName}?`)) return;
+    try {
+      await endpoints.deleteDocument(doc._id, doc.version);
+      setItems(items.filter((x) => x._id !== doc._id));
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  const filtered = items.filter((d) =>
+    `${d.fileName} ${d.classification} ${d.mimeType} ${d.contractId}`
+      .toLowerCase()
+      .includes(query.toLowerCase())
+  );
+
+  return (
+    <>
+      <Reveal direction="up" delay={20}>
+        <div className="page-heading">
+          <div>
+            <div className="eyebrow"><Sparkles size={13} /> Secure repository</div>
+            <h1>Documents</h1>
+            <p className="subtitle">Private, scanned contract files with controlled access.</p>
+          </div>
+          <div className="badge badge-blue">
+            <Lock size={12} /> Private storage
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal direction="up" delay={50}>
+        <div className="notice" style={{ marginBottom: 18 }}>
+          Documents are served through short-lived authorized URLs. Uploads are checksum-verified and malware-scanned before download.
+        </div>
+      </Reveal>
+
+      {error && <div className="notice" style={{ marginBottom: 18 }}>{error}</div>}
+
+      <Reveal direction="up" delay={80}>
+        <TiltCard className="card table-card" maxTilt={1.2}>
+          <div className="table-toolbar">
+            <form className="search" onSubmit={(e) => e.preventDefault()}>
+              <Search size={16} />
+              <input
+                aria-label="Search documents"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search file, classification, or contract ID"
+              />
+            </form>
+            <button className="icon-button" aria-label="Refresh documents" onClick={load}>
+              <RefreshCw size={15} />
+            </button>
+          </div>
+
+          <div className="table-scroll">
+            {filtered.length === 0 ? (
+              <div className="empty">
+                <FileCheck2 size={25} style={{ display: 'block', margin: '0 auto 12px', color: '#1d9365' }} />
+                No document records in this view.
+              </div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Contract</th>
+                    <th>Type</th>
+                    <th>Scan</th>
+                    <th>Uploaded</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((d: any) => (
+                    <tr key={d._id}>
+                      <td>
+                        <strong>{d.fileName}</strong>
+                        <div style={{ color: '#8293a0', fontSize: 11, marginTop: 4 }}>
+                          {d.classification} · {Math.ceil(d.sizeBytes / 1024)} KB
+                        </div>
+                      </td>
+                      <td>{d.contractId}</td>
+                      <td>{d.mimeType}</td>
+                      <td>
+                        <span
+                          className={`badge badge-${
+                            d.scanStatus === 'clean'
+                              ? 'green'
+                              : d.scanStatus === 'infected' || d.scanStatus === 'failed'
+                              ? 'red'
+                              : 'orange'
+                          }`}
+                        >
+                          {d.scanStatus}
+                        </span>
+                      </td>
+                      <td>{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '—'}</td>
+                      <td style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          className="icon-button"
+                          aria-label={`Download ${d.fileName}`}
+                          disabled={d.scanStatus !== 'clean'}
+                          onClick={() => download(d._id)}
+                        >
+                          <Download size={15} />
+                        </button>
+                        <button
+                          className="icon-button"
+                          aria-label={`Index ${d.fileName}`}
+                          disabled={d.scanStatus !== 'clean'}
+                          onClick={() => index(d)}
+                        >
+                          <Search size={15} />
+                        </button>
+                        <button
+                          className="icon-button"
+                          aria-label={`Delete ${d.fileName}`}
+                          onClick={() => remove(d)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </TiltCard>
+      </Reveal>
+    </>
+  );
+}

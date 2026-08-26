@@ -27,7 +27,7 @@ import { Renewals } from './pages/Renewals';
 import { hasCapability } from './utils/permissions';
 import type { Capability } from './utils/permissions';
 import type { User } from './services/types';
-import { AnimatedPage, CursorGlow } from './components/Motion';
+import { AnimatedPage, CursorGlow, SmoothLoadingScreen } from './components/Motion';
 import './index.css';
 
 type AuthState = { user: any | null; loading: boolean; login: (email: string, password: string, workspaceSlug?: string) => Promise<void>; register: (body: unknown) => Promise<void>; logout: () => void };
@@ -38,21 +38,81 @@ function App() {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [path, setPath] = useState(window.location.pathname || '/');
+
   useEffect(() => {
-    if (!getAccessToken()) { setLoading(false); return; }
-    endpoints.me().then((v) => { const nextUser = { ...v.user, roles: v.roles, permissions: v.permissions, organization: v.organization }; setUser(nextUser); if (v.organization?.status === 'onboarding' && window.location.pathname !== '/onboarding') { window.history.replaceState({}, '', '/onboarding'); setPath('/onboarding'); } }).catch(() => setUser(null)).finally(() => setLoading(false));
+    if (!getAccessToken()) return;
+    endpoints.me().then((v) => {
+      const nextUser = { ...v.user, roles: v.roles, permissions: v.permissions, organization: v.organization };
+      setUser(nextUser);
+      if (v.organization?.status === 'onboarding' && window.location.pathname !== '/onboarding') {
+        window.history.replaceState({}, '', '/onboarding');
+        setPath('/onboarding');
+      }
+    }).catch(() => setUser(null));
+
     const onPop = () => setPath(window.location.pathname);
     addEventListener('popstate', onPop);
     return () => removeEventListener('popstate', onPop);
   }, []);
+
   useEffect(() => {
     if (!user) return;
     const socket = connectRealtime((event, payload) => window.dispatchEvent(new CustomEvent('covenx:realtime', { detail: { event, payload } })));
     return () => { socket?.disconnect(); };
   }, [user]);
-  const navigate = (next: string) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  const value = useMemo<AuthState>(() => ({ user, loading, login: async (email, password, workspaceSlug) => { const result = await endpoints.login({ email, password, ...(workspaceSlug ? { workspaceSlug } : {}) }); setAccessToken(result.accessToken); const session = await endpoints.me(); setUser({ ...session.user, roles: session.roles, permissions: session.permissions, organization: session.organization ?? result.organization }); navigate(session.organization?.status === 'onboarding' ? '/onboarding' : '/'); }, register: async (body) => { const result = await endpoints.register(body); setAccessToken(result.accessToken); const session = await endpoints.me(); setUser({ ...session.user, roles: session.roles, permissions: session.permissions, organization: session.organization ?? result.organization }); navigate('/onboarding'); }, logout: () => { setAccessToken(null); setUser(null); navigate('/login'); } }), [user, loading]);
-  return <AuthContext.Provider value={value}><CursorGlow />{loading ? <div className="loading-screen"><div className="loading-orbit" /><div className="loading-ring" /><img src="/covenx-logo-transparent.png" alt="CovenX" /><span>Preparing your secure workspace</span><div className="loading-progress" aria-hidden="true"><i /></div></div> : !user ? (path === '/login' ? <Login navigate={navigate} /> : path === '/register' ? <Register navigate={navigate} /> : <Landing onEnter={() => navigate('/login')} onRegister={() => navigate('/register')} />) : <Layout path={path} setPath={navigate} onLogout={value.logout}><AnimatedPage routeKey={path}><Page path={path} navigate={navigate} user={user} /></AnimatedPage></Layout>}</AuthContext.Provider>;
+
+  const navigate = (next: string) => {
+    window.history.pushState({}, '', next);
+    setPath(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const value = useMemo<AuthState>(() => ({
+    user,
+    loading,
+    login: async (email, password, workspaceSlug) => {
+      const result = await endpoints.login({ email, password, ...(workspaceSlug ? { workspaceSlug } : {}) });
+      setAccessToken(result.accessToken);
+      const session = await endpoints.me();
+      setUser({ ...session.user, roles: session.roles, permissions: session.permissions, organization: session.organization ?? result.organization });
+      navigate(session.organization?.status === 'onboarding' ? '/onboarding' : '/');
+    },
+    register: async (body) => {
+      const result = await endpoints.register(body);
+      setAccessToken(result.accessToken);
+      const session = await endpoints.me();
+      setUser({ ...session.user, roles: session.roles, permissions: session.permissions, organization: session.organization ?? result.organization });
+      navigate('/onboarding');
+    },
+    logout: () => {
+      setAccessToken(null);
+      setUser(null);
+      navigate('/login');
+    },
+  }), [user, loading]);
+
+  return (
+    <AuthContext.Provider value={value}>
+      <CursorGlow />
+      {loading ? (
+        <SmoothLoadingScreen onComplete={() => setLoading(false)} />
+      ) : !user ? (
+        path === '/login' ? (
+          <Login navigate={navigate} />
+        ) : path === '/register' ? (
+          <Register navigate={navigate} />
+        ) : (
+          <Landing onEnter={() => navigate('/login')} onRegister={() => navigate('/register')} />
+        )
+      ) : (
+        <Layout path={path} setPath={navigate} onLogout={value.logout}>
+          <AnimatedPage routeKey={path}>
+            <Page path={path} navigate={navigate} user={user} />
+          </AnimatedPage>
+        </Layout>
+      )}
+    </AuthContext.Provider>
+  );
 }
 
 function Page({ path, navigate, user }: { path: string; navigate: (next: string) => void; user: User }) {

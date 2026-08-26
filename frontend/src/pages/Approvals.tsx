@@ -1,6 +1,143 @@
 import { useEffect, useState } from 'react';
-import { Check, Clock3, Forward, MessageSquare, X } from 'lucide-react';
+import { Check, Clock3, Forward, MessageSquare, Sparkles, X } from 'lucide-react';
 import { endpoints, listItems } from '../services/api';
 import { useRealtimeRefresh } from '../hooks/useRealtimeRefresh';
 import { approvalActionSchema, parseForm } from '../services/types';
-export function Approvals() { const [items, setItems] = useState<any[]>([]); const [notes, setNotes] = useState<Record<string, string>>({}); const [busy, setBusy] = useState<string | null>(null); const [error, setError] = useState(''); const load = async () => { try { setItems(listItems(await endpoints.approvals('status=pending'))); } catch (e: any) { setError(e.message); } }; useEffect(() => { load(); }, []); useRealtimeRefresh(['approval.updated'], load); const decide = async (task: any, action: 'approve' | 'reject' | 'delegate') => { setBusy(task._id); setError(''); try { const text = notes[task._id] ?? ''; const payload = parseForm(approvalActionSchema, action === 'reject' ? { version: task.version, reason: text || 'Needs revision' } : action === 'delegate' ? { version: task.version, comment: text } : { version: task.version, comment: text }); if (action === 'approve') await endpoints.approve(task._id, payload); if (action === 'reject') await endpoints.reject(task._id, payload); if (action === 'delegate') { const delegateToUserId = window.prompt('Enter the reviewer user ID to delegate to'); if (!delegateToUserId) return; await endpoints.delegateApproval(task._id, { ...payload, delegateToUserId }); } setItems(items.filter((x) => x._id !== task._id)); } catch (e: any) { setError(e.issues?.[0]?.message ?? e.message); } finally { setBusy(null); } }; return <><div className="page-heading"><div><div className="eyebrow">Decision queue</div><h1>Approvals</h1><p className="subtitle">Review assigned tasks with clear SLA and decision context.</p></div><span className="badge badge-orange"><Clock3 size={12} /> {items.length} open items</span></div>{error && <div className="notice" style={{ marginBottom: 18 }}>{error}</div>}<section className="card table-card"><div className="table-scroll">{items.length === 0 ? <div className="empty">Your approval queue is clear.</div> : <table><thead><tr><th>Contract</th><th>Stage</th><th>Due</th><th>Comment / reason</th><th>Decision</th></tr></thead><tbody>{items.map((task: any) => <tr key={task._id}><td><strong>{task.contractId}</strong><div style={{ color: '#8293a0', fontSize: 11, marginTop: 4 }}>Version {task.version}</div></td><td>{task.stageKey ?? 'Review'}</td><td>{task.dueAt ? new Date(task.dueAt).toLocaleDateString() : '—'}</td><td><div className="search" style={{ width: 230 }}><MessageSquare size={14} /><input aria-label={`Comment for ${task.contractId}`} value={notes[task._id] ?? ''} onChange={(e) => setNotes({ ...notes, [task._id]: e.target.value })} placeholder="Optional context" /></div></td><td style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}><button className="btn btn-primary" disabled={busy === task._id} onClick={() => decide(task, 'approve')}><Check size={14} /> Approve</button><button className="btn btn-secondary" disabled={busy === task._id} onClick={() => decide(task, 'reject')}><X size={14} /> Reject</button><button className="btn btn-secondary" disabled={busy === task._id} onClick={() => decide(task, 'delegate')}><Forward size={14} /> Delegate</button></td></tr>)}</tbody></table>}</div></section></>; }
+import { TiltCard, Reveal } from '../components/Motion';
+
+export function Approvals() {
+  const [items, setItems] = useState<any[]>([]);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    try {
+      setItems(listItems(await endpoints.approvals('status=pending')));
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+  useRealtimeRefresh(['approval.updated'], load);
+
+  const decide = async (task: any, action: 'approve' | 'reject' | 'delegate') => {
+    setBusy(task._id);
+    setError('');
+    try {
+      const text = notes[task._id] ?? '';
+      const payload = parseForm(
+        approvalActionSchema,
+        action === 'reject'
+          ? { version: task.version, reason: text || 'Needs revision' }
+          : action === 'delegate'
+          ? { version: task.version, comment: text }
+          : { version: task.version, comment: text }
+      );
+      if (action === 'approve') await endpoints.approve(task._id, payload);
+      if (action === 'reject') await endpoints.reject(task._id, payload);
+      if (action === 'delegate') {
+        const delegateToUserId = window.prompt('Enter the reviewer user ID to delegate to');
+        if (!delegateToUserId) return;
+        await endpoints.delegateApproval(task._id, { ...payload, delegateToUserId });
+      }
+      setItems(items.filter((x) => x._id !== task._id));
+    } catch (e: any) {
+      setError(e.issues?.[0]?.message ?? e.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <>
+      <Reveal direction="up" delay={20}>
+        <div className="page-heading">
+          <div>
+            <div className="eyebrow"><Sparkles size={13} /> Decision queue</div>
+            <h1>Approvals</h1>
+            <p className="subtitle">Review assigned tasks with clear SLA and decision context.</p>
+          </div>
+          <span className="badge badge-orange">
+            <Clock3 size={12} /> {items.length} open items
+          </span>
+        </div>
+      </Reveal>
+
+      {error && <div className="notice" style={{ marginBottom: 18 }}>{error}</div>}
+
+      <Reveal direction="up" delay={50}>
+        <TiltCard className="card table-card" maxTilt={1.2}>
+          <div className="table-scroll">
+            {items.length === 0 ? (
+              <div className="empty">Your approval queue is clear.</div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Contract</th>
+                    <th>Stage</th>
+                    <th>Due</th>
+                    <th>Comment / reason</th>
+                    <th>Decision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((task: any) => (
+                    <tr key={task._id}>
+                      <td>
+                        <strong>{task.contractId}</strong>
+                        <div style={{ color: '#8293a0', fontSize: 11, marginTop: 4 }}>
+                          Version {task.version}
+                        </div>
+                      </td>
+                      <td>{task.stageKey ?? 'Review'}</td>
+                      <td>{task.dueAt ? new Date(task.dueAt).toLocaleDateString() : '—'}</td>
+                      <td>
+                        <div className="search" style={{ width: 230 }}>
+                          <MessageSquare size={14} />
+                          <input
+                            aria-label={`Comment for ${task.contractId}`}
+                            value={notes[task._id] ?? ''}
+                            onChange={(e) => setNotes({ ...notes, [task._id]: e.target.value })}
+                            placeholder="Optional context"
+                          />
+                        </div>
+                      </td>
+                      <td style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+                        <button
+                          className="btn btn-primary"
+                          disabled={busy === task._id}
+                          onClick={() => decide(task, 'approve')}
+                        >
+                          <Check size={14} /> Approve
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          disabled={busy === task._id}
+                          onClick={() => decide(task, 'reject')}
+                        >
+                          <X size={14} /> Reject
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          disabled={busy === task._id}
+                          onClick={() => decide(task, 'delegate')}
+                        >
+                          <Forward size={14} /> Delegate
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </TiltCard>
+      </Reveal>
+    </>
+  );
+}
