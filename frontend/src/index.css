@@ -426,11 +426,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .landing-hero h1 { color: #f3faf6; font-size: clamp(49px, 6vw, 82px); line-height: .95; letter-spacing: -.075em; max-width: 720px; margin-top: 20px; }
 .landing-hero h1 em { font-style: normal; color: var(--emerald-400); }
 .landing-lede { color: #9bb5bd; max-width: 590px; font-size: 16px; line-height: 1.8; margin-top: 26px; }
-.landing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-top: 32px; }
-.landing-primary { padding: 14px 19px; border-radius: 999px; color: #061522; background: linear-gradient(120deg, #52d497, #b5e7cb); box-shadow: 0 15px 35px rgba(45,168,117,.22); }
-.landing-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 42px rgba(45,168,117,.32); }
-.landing-text-link { display: inline-flex; gap: 3px; align-items: center; color: #b5c9cd; font-size: 12px; text-decoration: none; }
-.landing-text-link:hover { color: #fff; }
+.landing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+.landing-primary { padding: 16px 28px; border-radius: 999px; color: #061522; font-size: 15px; font-weight: 700; letter-spacing: -.01em; background: linear-gradient(135deg, #3ee09a 0%, #a8eac7 50%, #52d497 100%); background-size: 200% 100%; box-shadow: 0 0 20px rgba(62,224,154,.25), 0 12px 32px rgba(45,168,117,.22); animation: shimmer-btn 3s ease-in-out infinite; }
+.landing-primary:hover { transform: translateY(-3px); box-shadow: 0 0 28px rgba(62,224,154,.35), 0 18px 42px rgba(45,168,117,.30); }
+@keyframes shimmer-btn { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.landing-text-link { display: inline-flex; gap: 6px; align-items: center; padding: 14px 24px; border-radius: 999px; border: 1px solid rgba(181,201,205,.3); color: #cddfe5; font-size: 14px; font-weight: 600; text-decoration: none; background: rgba(255,255,255,.04); backdrop-filter: blur(6px); }
+.landing-text-link:hover { color: #fff; border-color: rgba(255,255,255,.45); background: rgba(255,255,255,.08); }
 .landing-trust-row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 32px; color: #7896a2; font-size: 11px; }
 .landing-trust-row span { display: inline-flex; gap: 6px; align-items: center; }
 .landing-trust-row svg { color: var(--emerald-400); }
@@ -851,6 +852,7 @@ tbody tr:hover td { color: #173149; }
 
 /* ── Company registration and onboarding ──────────────────────────────────── */
 .landing-nav-actions { display: inline-flex; align-items: center; gap: 14px; }
+.landing-nav-actions .landing-text-link { padding: 9px 16px; font-size: 13px; backdrop-filter: none; }
 .register-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(340px, .82fr) 1.18fr; background: #f7faf9; color: #173149; }
 .register-aside { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; overflow: hidden; padding: clamp(28px, 5vw, 64px); background: radial-gradient(circle at 10% 15%, rgba(45,168,117,.2), transparent 32%), linear-gradient(145deg, #09283b 0%, #123c4e 55%, #126b56 120%); color: #fff; }
 .register-aside::after { content: ''; position: absolute; width: 520px; height: 520px; right: -250px; bottom: -230px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; box-shadow: 0 0 0 50px rgba(255,255,255,.03), 0 0 0 100px rgba(255,255,255,.02); pointer-events: none; }
