@@ -1,4 +1,4 @@
-import { ArrowRight, Bot, CheckCircle2, ChevronRight, FileCheck2, LockKeyhole, Radar, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
+import { ArrowRight, Bot, CheckCircle2, ChevronRight, FileCheck2, Github, Globe, Linkedin, LockKeyhole, Mail, MapPin, Phone, Radar, Shield, ShieldCheck, Sparkles, Twitter, Workflow } from 'lucide-react';
 import { ParallaxLayer, TiltCard } from '../components/Motion';
 
 const lifecycle = [
@@ -60,6 +60,132 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
 
       <section className="landing-section security-section" id="security"><div className="security-badge"><ShieldCheck size={22} /></div><div className="section-intro"><div className="eyebrow">Enterprise trust, operationalized</div><h2>Security is part of the workflow.</h2><p>Role-based access, audit trails, secure document management, data isolation, and governed lifecycle controls are built into the CovenX operating model.</p><div className="security-pills"><span>RBAC</span><span>Audit-ready</span><span>Tenant isolated</span><span>Lifecycle governed</span></div></div></section>
     </main>
-    <footer className="landing-footer"><div className="landing-brand"><img src="/covenx-logo-transparent.png" alt="CovenX" /><span><strong>CovenX</strong><small>Enterprise Contract Lifecycle Management Platform</small></span></div><span>Trust every agreement. Move with confidence.</span></footer>
+    <footer className="landing-footer-container">
+      <div className="landing-footer-cta-banner glass-panel">
+        <div className="cta-banner-content">
+          <div className="eyebrow"><Sparkles size={14} /> Ready to modernize contract operations?</div>
+          <h2>Bring enterprise intelligence and security to every agreement.</h2>
+          <p>Join high-velocity legal, procurement, and finance teams operating on CovenX.</p>
+        </div>
+        <div className="cta-banner-actions">
+          <button className="btn landing-primary" onClick={onRegister}>
+            Create your company workspace <ArrowRight size={16} />
+          </button>
+          <button className="landing-text-link" onClick={onEnter}>
+            Sign in to existing workspace <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
+
+      <div className="landing-footer-main">
+        <div className="footer-brand-col">
+          <button className="brand-button landing-footer-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="CovenX home">
+            <div className="brand-badge">
+              <img className="brand-badge-logo" src="/covenx-logo-transparent.png" alt="CovenX" />
+            </div>
+            <div className="brand-copy">
+              <strong>CovenX</strong>
+              <small>Enterprise contract intelligence</small>
+            </div>
+          </button>
+          <p className="footer-tagline">
+            The next-generation Contract Lifecycle Management Platform engineered for security, compliance, and enterprise velocity.
+          </p>
+          <div className="footer-compliance-badges">
+            <span className="compliance-pill"><ShieldCheck size={13} /> SOC 2 Type II</span>
+            <span className="compliance-pill"><LockKeyhole size={13} /> ISO 27001</span>
+            <span className="compliance-pill"><CheckCircle2 size={13} /> GDPR Ready</span>
+          </div>
+          <div className="footer-social-row">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">
+              <Linkedin size={16} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Twitter / X">
+              <Twitter size={16} />
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="GitHub">
+              <Github size={16} />
+            </a>
+            <a href="https://covenx.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Global Web">
+              <Globe size={16} />
+            </a>
+          </div>
+        </div>
+
+        <div className="footer-nav-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#platform">Contract Lifecycle</a></li>
+            <li><a href="#intelligence">AI Risk Extraction</a></li>
+            <li><a href="#security">Enterprise Approvals</a></li>
+            <li><button className="footer-link-btn" onClick={onRegister}>Obligation Manager</button></li>
+            <li><button className="footer-link-btn" onClick={onRegister}>Clause Intelligence</button></li>
+            <li><button className="footer-link-btn" onClick={onRegister}>Renewal Pipeline</button></li>
+          </ul>
+        </div>
+
+        <div className="footer-nav-col">
+          <h4>Security & Trust</h4>
+          <ul>
+            <li><a href="#security">Tenant Isolation</a></li>
+            <li><a href="#security">Role-Based Access (RBAC)</a></li>
+            <li><button className="footer-link-btn" onClick={onEnter}>Audit History</button></li>
+            <li><a href="#security">Malware File Scanning</a></li>
+            <li><a href="#security">Data Encryption at Rest</a></li>
+            <li><a href="#security">Compliance Posture</a></li>
+          </ul>
+        </div>
+
+        <div className="footer-nav-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#platform">About CovenX</a></li>
+            <li><button className="footer-link-btn" onClick={onRegister}>Guided 14-day Trial</button></li>
+            <li><button className="footer-link-btn" onClick={onEnter}>Workspace Portal</button></li>
+            <li><a href="#platform">Privacy Policy</a></li>
+            <li><a href="#platform">Terms of Service</a></li>
+            <li><a href="#intelligence">Responsible AI</a></li>
+          </ul>
+        </div>
+
+        <div className="footer-nav-col footer-contact-col">
+          <h4>Contact & Support</h4>
+          <div className="contact-list">
+            <a href="mailto:sales@covenx.com" className="contact-item">
+              <Mail size={15} />
+              <span>sales@covenx.com</span>
+            </a>
+            <a href="mailto:support@covenx.com" className="contact-item">
+              <Shield size={15} />
+              <span>support@covenx.com</span>
+            </a>
+            <div className="contact-item">
+              <Phone size={15} />
+              <span>+1 (888) 420-COVEN</span>
+            </div>
+            <div className="contact-item">
+              <MapPin size={15} />
+              <span>100 Montgomery St, Suite 1800, San Francisco, CA</span>
+            </div>
+            <div className="contact-item status-live">
+              <span className="live-dot" />
+              <span>24/7 Enterprise Support SLA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="landing-footer-bottom">
+        <div className="footer-bottom-left">
+          <span>© {new Date().getFullYear()} CovenX Enterprise Platform. All rights reserved.</span>
+          <span className="footer-tagline-sub">Intelligent contract operations for high-stakes agreements.</span>
+        </div>
+        <div className="footer-bottom-right">
+          <span className="system-status-indicator">
+            <span className="pulse-dot" /> All Systems Operational (99.99% SLA)
+          </span>
+        </div>
+      </div>
+    </footer>
   </div>;
 }
