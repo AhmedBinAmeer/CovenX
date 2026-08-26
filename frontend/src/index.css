@@ -509,8 +509,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .footer-nav-col a, .footer-link-btn { appearance: none; background: transparent; border: 0; padding: 0; color: #8da8ae; font-size: 13px; text-decoration: none; text-align: left; cursor: pointer; transition: color 0.18s ease, transform 0.18s ease; display: inline-block; }
 .footer-nav-col a:hover, .footer-link-btn:hover { color: #ffffff; transform: translateX(3px); }
 .footer-contact-col .contact-list { display: flex; flex-direction: column; gap: 12px; }
-.contact-item { display: flex; align-items: center; gap: 10px; color: #8da8ae; font-size: 12.5px; text-decoration: none; transition: color 0.18s ease; }
-.contact-item svg { color: var(--emerald-400); flex-shrink: 0; }
+.contact-item { display: flex; align-items: flex-start; gap: 10px; color: #8da8ae; font-size: 12.5px; text-decoration: none; transition: color 0.18s ease; }
+.contact-item svg { color: var(--emerald-400); flex-shrink: 0; min-width: 18px; margin-top: 2px; }
 a.contact-item:hover { color: #ffffff; }
 .contact-item.status-live { margin-top: 4px; padding: 6px 10px; background: rgba(45, 168, 117, 0.1); border: 1px solid rgba(85, 211, 154, 0.25); border-radius: 8px; color: #b5eed7; font-size: 11px; font-weight: 600; }
 .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ee09a; box-shadow: 0 0 0 3px rgba(62, 224, 154, 0.3); display: inline-block; flex-shrink: 0; }
