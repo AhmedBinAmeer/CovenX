@@ -17,10 +17,12 @@ import { getDashboardSummary, getContractAnalytics, getApprovalAnalytics, getObl
 import { searchProvider } from '../services/search.js';
 import { encryptSecret, decryptSecret, redactedIntegration, providerHealthStatus, supportedIntegrationTypes, verifyHmacSignature, verifySlackSignature } from '../services/integrations.js';
 import { requireAuth, requirePermission, validate } from '../middleware/index.js';
+import { idempotency } from '../middleware/idempotency.js';
 import { request, contractCreate, templateCreate, clauseCreate, workflowCreate, approvalAction, signatureRequest, signatureEvidence, obligationCreate, obligationPatch, obligationComplete, renewalRequest, documentUpload, documentFinalize, documentDelete, notificationPreferences, redlineCreate, collaborationCommentCreate, collaborationCommentResolve, semanticSearch } from '../validators/index.js';
 import { decodeCursor, encodeCursor, pageLimit, queryFingerprint } from '../utils/pagination.js';
 
 const router = Router();
+router.use(idempotency());
 const tenant = (req: Request) => String(req.auth?.tenantId ?? req.header('x-tenant-id') ?? '000000000000000000000001');
 const envelope = (data: any, req: Request) => ({ success: true, data, meta: { requestId: req.requestId } });
 const userView = (u: any) => { const value = u.toObject ? u.toObject() : { ...u }; delete value.passwordHash; return value; };
