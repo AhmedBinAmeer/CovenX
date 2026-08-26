@@ -38,7 +38,9 @@ const schema = z.object({
   WORKER_ENABLED: z.coerce.boolean().default(true),
   WORKER_POLL_INTERVAL_MS: z.coerce.number().int().positive().default(2000),
   WORKER_SCHEDULE_INTERVAL_MS: z.coerce.number().int().positive().default(900000),
-  INTEGRATION_ENCRYPTION_KEY: z.string().optional()
+  INTEGRATION_ENCRYPTION_KEY: z.string().optional(),
+  VECTOR_SEARCH_PROVIDER: z.enum(['local', 'atlas']).default('local'),
+  VECTOR_SEARCH_INDEX: z.string().default('covenx_document_chunks_vector')
 });
 
 export const config = schema.parse(process.env);

@@ -47,7 +47,12 @@ export async function indexDocument(tenantId: string, documentId: string, actorI
 
 function cosine(a: number[], b: number[]) { const size = Math.min(a.length, b.length); let dot = 0; let na = 0; let nb = 0; for (let i = 0; i < size; i += 1) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; } return dot / ((Math.sqrt(na) * Math.sqrt(nb)) || 1); }
 export async function semanticSearch(tenantId: string, query: string, contractId?: string, limit = 10) {
-  const vector = (await embed([query])).vectors[0]; const filter: any = { tenantId }; if (contractId) filter.contractId = asId(contractId); const chunks: any[] = await DocumentChunk.find(filter).lean();
-  const withScore = chunks.map((chunk) => { const score = cosine(vector, (chunk.embedding ?? []) as number[]); const { embedding: _embedding, ...safeChunk } = chunk; return { ...safeChunk, score }; }).sort((left, right) => right.score - left.score).slice(0, Math.min(limit, 50));
+  const vector = (await embed([query])).vectors[0]; const safeLimit = Math.min(limit, 50);
+  if (config.VECTOR_SEARCH_PROVIDER === 'atlas') {
+    const filter: any = { tenantId }; if (contractId) filter.contractId = asId(contractId);
+    try { return await DocumentChunk.aggregate([{ $vectorSearch: { index: config.VECTOR_SEARCH_INDEX, path: 'embedding', queryVector: vector, numCandidates: Math.max(safeLimit * 20, 100), limit: safeLimit, filter: { tenantId: { $eq: tenantId }, ...(contractId ? { contractId: { $eq: asId(contractId) } } : {}) } } }, { $project: { embedding: 0, __v: 0, text: 1, textHash: 1, documentId: 1, contractId: 1, contractVersionId: 1, chunkIndex: 1, pageStart: 1, pageEnd: 1, metadata: 1, score: { $meta: 'vectorSearchScore' } } }]); } catch (error) { if (process.env.NODE_ENV === 'production') throw error; }
+  }
+  const filter: any = { tenantId }; if (contractId) filter.contractId = asId(contractId); const chunks: any[] = await DocumentChunk.find(filter).lean();
+  const withScore = chunks.map((chunk) => { const score = cosine(vector, (chunk.embedding ?? []) as number[]); const { embedding: _embedding, ...safeChunk } = chunk; return { ...safeChunk, score }; }).sort((left, right) => right.score - left.score).slice(0, safeLimit);
   return withScore;
 }
