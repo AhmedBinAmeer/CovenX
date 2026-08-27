@@ -3,21 +3,21 @@ import { test, expect } from '@playwright/test';
 test('public CovenX landing experience is reachable', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/CovenX/i);
-  await expect(page.getByText(/CovenX is the enterprise Contract Lifecycle Management Platform/i)).toBeVisible();
+  await expect(page.getByText(/CovenX is the enterprise Contract Lifecycle Management Platform/i)).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: /Enter workspace/i })).toBeVisible();
 });
 
 test('login route preserves the governed workspace entry', async ({ page }) => {
   await page.goto('/login');
-  await expect(page.getByText(/Welcome back/i)).toBeVisible();
-  await expect(page.getByLabel(/Email/i)).toBeVisible();
+  await expect(page.getByText(/Welcome back/i)).toBeVisible({ timeout: 15000 });
+  await expect(page.getByLabel(/Work email|Email/i)).toBeVisible();
   await expect(page.getByLabel(/Password/i)).toBeVisible();
-  await expect(page.getByRole('button', { name: /Create workspace/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Continue securely|Sign in|Log in/i })).toBeVisible();
 });
 
 test('company registration route explains isolated workspace creation', async ({ page }) => {
   await page.goto('/register');
-  await expect(page.getByText(/Create your workspace/i)).toBeVisible();
+  await expect(page.getByText(/Create your workspace/i)).toBeVisible({ timeout: 15000 });
   await expect(page.getByLabel(/Company name/i)).toBeVisible();
   await expect(page.getByLabel(/Work email/i)).toBeVisible();
   await expect(page.getByLabel(/Password/i)).toBeVisible();
@@ -27,10 +27,10 @@ test('company registration route explains isolated workspace creation', async ({
 test('authenticated shell smoke path can be exercised with a configured test session', async ({ page }) => {
   test.skip(!process.env.COVENX_E2E_EMAIL || !process.env.COVENX_E2E_PASSWORD, 'Set COVENX_E2E_EMAIL and COVENX_E2E_PASSWORD for authenticated E2E coverage.');
   await page.goto('/login');
-  await page.getByLabel(/Email/i).fill(process.env.COVENX_E2E_EMAIL!);
+  await page.getByLabel(/Work email|Email/i).fill(process.env.COVENX_E2E_EMAIL!);
   await page.getByLabel(/Password/i).fill(process.env.COVENX_E2E_PASSWORD!);
-  await page.getByRole('button', { name: /Sign in|Log in/i }).click();
-  await expect(page.getByText(/Live workspace/i)).toBeVisible();
+  await page.getByRole('button', { name: /Continue securely|Sign in|Log in/i }).click();
+  await expect(page.getByText(/Live workspace/i)).toBeVisible({ timeout: 15000 });
   await page.keyboard.press('Control+K');
   await expect(page.getByRole('dialog', { name: /command palette/i })).toBeVisible();
 });

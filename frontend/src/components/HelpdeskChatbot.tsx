@@ -182,16 +182,18 @@ export const HelpdeskChatbot: React.FC = () => {
         <button
           className="helpdesk-trigger-btn"
           onClick={() => { setIsOpen(true); setIsMinimized(false); }}
-          title="Open CovenX AI Helpdesk (Ctrl + /)"
+          title="Open CovenX AI Helpdesk"
           aria-label="Open CovenX AI Helpdesk"
         >
-          <div className="helpdesk-trigger-glow" />
+          <span className="helpdesk-ripple-ring ring-1" aria-hidden="true" />
+          <span className="helpdesk-ripple-ring ring-2" aria-hidden="true" />
+          <div className="helpdesk-trigger-glow" aria-hidden="true" />
+          <div className="helpdesk-sheen-sweep" aria-hidden="true" />
           <span className="helpdesk-trigger-icon">
-            <Sparkles size={16} className="helpdesk-sparkle" />
-            <Bot size={20} />
+            <Sparkles size={14} className="helpdesk-sparkle" />
+            <Bot size={20} className="helpdesk-bot-icon" />
           </span>
           <span className="helpdesk-trigger-label">AI Helpdesk</span>
-          <span className="helpdesk-shortcut-pill">Ctrl+/</span>
         </button>
       )}
 
