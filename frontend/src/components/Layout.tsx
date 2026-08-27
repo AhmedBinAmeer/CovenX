@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../main';
 import type { Capability } from '../utils/permissions';
+import { HelpdeskChatbot } from './HelpdeskChatbot';
 
 const links: Array<{ path: string; label: string; icon: typeof Gauge; permission: Capability }> = [
   { path: '/', label: 'Overview', icon: Gauge, permission: 'report:read' },
@@ -213,6 +214,7 @@ export function Layout({
             </section>
           </div>
         )}
+        <HelpdeskChatbot />
       </main>
     </div>
   );

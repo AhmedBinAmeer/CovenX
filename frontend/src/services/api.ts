@@ -115,4 +115,6 @@ export const endpoints = {
   createIntegration: (body: unknown) => request<any>('/integrations', json(body)),
   updateIntegration: (id: Id, body: unknown) => request<any>(`/integrations/${id}`, patch(body)),
   testIntegration: (id: Id) => request<any>(`/integrations/${id}/test`, json({})),
+  helpdeskChat: (body: { message: string; history?: Array<{ role: string; content: string }> }) =>
+    request<{ message: string; suggestions: string[]; action?: { type: string; label: string; url?: string } | null }>('/helpdesk/chat', json(body)),
 };

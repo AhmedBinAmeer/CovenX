@@ -8,6 +8,7 @@ import { executeWorkflow, completeApproval } from '../services/workflow.js';
 import { publishEvent } from '../services/events.js';
 import { requestSignature, completeSignature, declineSignature } from '../services/signatures.js';
 import { analyzeContract, answerContractQuestion, listContractIntelligence, reviewIntelligence } from '../services/intelligence.js';
+import { processHelpdeskQuery } from '../services/helpdesk.js';
 import { createRenewal } from '../services/renewals.js';
 import { compareVersions, createRedline, resolveComment } from '../services/collaboration.js';
 import { indexDocument, semanticSearch as runSemanticSearch } from '../services/ingestion.js';
@@ -131,5 +132,26 @@ router.patch('/integrations/:id', requireAuth, requirePermission('integration:up
 router.post('/integrations/:id/test', requireAuth, requirePermission('integration:update'), async (req, res, next) => { try { const integration: any = await Integration.findOne({ _id: asId(String(req.params.id)), tenantId: tenant(req) }).select('+secretCiphertext +secretIv +secretTag'); if (!integration) throw new Error('RESOURCE_NOT_FOUND'); const secret = integration.secretCiphertext ? decryptSecret(integration) : undefined; const health = providerHealthStatus(integration.type, secret); integration.status = health.status; integration.lastHealthCheckAt = new Date(); integration.lastError = health.status === 'connected' ? undefined : health.message; await integration.save(); res.json(envelope({ ...redactedIntegration(integration), health }, req)); } catch (e) { next(e); } });
 
 router.post('/webhooks/:provider', async (req, res, next) => { try { const provider = String(req.params.provider); if (!supportedIntegrationTypes.includes(provider as any)) throw new Error('UNSUPPORTED_PROVIDER'); const externalEventId = String(req.header('x-event-id') ?? req.body?.event_id ?? req.body?.eventId ?? ''); if (!externalEventId) throw new Error('WEBHOOK_EVENT_ID_REQUIRED'); const rawBody = JSON.stringify(req.body ?? {}); const payloadHash = crypto.createHash('sha256').update(rawBody).digest('hex'); const integration: any = await Integration.findOne({ type: provider, status: { $in: ['connected', 'degraded'] } }).select('+secretCiphertext +secretIv +secretTag').sort({ updatedAt: -1 }); const secret = integration?.secretCiphertext ? decryptSecret(integration) : undefined; const signature = req.header('x-signature') ?? req.header('x-slack-signature') ?? undefined; const timestamp = req.header('x-slack-request-timestamp') ?? undefined; const valid = provider === 'slack' ? Boolean(secret?.signingSecret && verifySlackSignature(rawBody, signature, timestamp, secret.signingSecret)) : Boolean(secret?.webhookSecret && verifyHmacSignature(rawBody, signature, secret.webhookSecret)); if (!valid) return res.status(401).json({ success: false, error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: 'Webhook signature verification failed' } }); const existing = await WebhookEvent.findOne({ tenantId: integration.tenantId, provider, externalEventId }); if (existing) return res.status(200).json({ success: true, data: { received: true, duplicate: true } }); const record = await WebhookEvent.create({ tenantId: integration.tenantId, provider, externalEventId, eventType: String(req.body?.type ?? req.body?.event?.type ?? 'unknown'), signatureValid: true, payloadHash, status: 'received' }); await publishEvent({ name: 'IntegrationWebhookReceived.v1', tenantId: String(integration.tenantId), entityId: record.id, payload: { provider, webhookEventId: record.id, externalEventId } }); res.status(202).json({ success: true, data: { received: true, webhookEventId: record.id } }); } catch (e) { next(e); } });
+
+router.post('/helpdesk/chat', async (req, res, next) => {
+  try {
+    const body = z.object({
+      message: z.string().min(1).max(2000),
+      history: z.array(z.object({
+        role: z.enum(['user', 'assistant', 'system']),
+        content: z.string().max(4000)
+      })).max(20).optional().default([])
+    }).strict().parse(req.body);
+
+    const tenantId = req.auth?.tenantId ? String(req.auth.tenantId) : req.header('x-tenant-id') ? String(req.header('x-tenant-id')) : undefined;
+    const actorId = req.auth?.userId ? String(req.auth.userId) : undefined;
+
+    const result = await processHelpdeskQuery(tenantId, actorId, body.message, body.history as any);
+    res.json(envelope(result, req));
+  } catch (e: any) {
+    console.error('Helpdesk chat error:', e?.stack || e);
+    next(e);
+  }
+});
 
 export default router;

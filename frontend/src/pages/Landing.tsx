@@ -23,6 +23,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { ParallaxLayer, TiltCard, Reveal } from '../components/Motion';
+import { HelpdeskChatbot } from '../components/HelpdeskChatbot';
 
 const lifecycle = [
   { icon: FileCheck2, label: 'Intake & Authoring', copy: 'Generate standard agreements from locked clause templates with dynamic governance.' },
@@ -501,6 +502,7 @@ export function Landing({ onEnter, onRegister }: { onEnter: () => void; onRegist
           </div>
         </div>
       </footer>
+      <HelpdeskChatbot />
     </div>
   );
 }
