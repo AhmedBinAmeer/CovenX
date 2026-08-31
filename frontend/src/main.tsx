@@ -36,11 +36,14 @@ export const useAuth = () => useContext(AuthContext);
 
 function App() {
   const [user, setUser] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(getAccessToken()));
   const [path, setPath] = useState(window.location.pathname || '/');
 
   useEffect(() => {
-    if (!getAccessToken()) return;
+    if (!getAccessToken()) {
+      setLoading(false);
+      return;
+    }
     endpoints.me().then((v) => {
       const nextUser = { ...v.user, roles: v.roles, permissions: v.permissions, organization: v.organization };
       setUser(nextUser);
@@ -48,7 +51,7 @@ function App() {
         window.history.replaceState({}, '', '/onboarding');
         setPath('/onboarding');
       }
-    }).catch(() => setUser(null));
+    }).catch(() => setUser(null)).finally(() => setLoading(false));
 
     const onPop = () => setPath(window.location.pathname);
     addEventListener('popstate', onPop);

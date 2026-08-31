@@ -253,80 +253,49 @@ export function SmoothLoadingScreen({
   message?: string;
   onComplete?: () => void;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState('Initializing secure environment');
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
     const stages = [
-      { at: 0, label: 'Verifying security perimeter' },
-      { at: 0.3, label: 'Loading tenant RBAC policies & keys' },
-      { at: 0.6, label: 'Establishing real-time audit boundary' },
-      { at: 0.9, label: 'Ready' },
+      { at: 20, label: 'Verifying security perimeter' },
+      { at: 50, label: 'Loading tenant RBAC policies & keys' },
+      { at: 80, label: 'Establishing real-time audit boundary' },
+      { at: 100, label: 'Ready' },
     ];
 
-    const onTimeUpdate = () => {
-      if (!video.duration || !Number.isFinite(video.duration)) return;
-      const pct = Math.min(1, video.currentTime / video.duration);
-      setProgress(Math.round(pct * 100));
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 10;
+      setProgress(Math.min(100, currentProgress));
       for (let i = stages.length - 1; i >= 0; i--) {
-        if (pct >= stages[i].at) {
+        if (currentProgress >= stages[i].at) {
           setStage(stages[i].label);
           break;
         }
       }
-    };
-
-    const onEnded = () => {
-      setProgress(100);
-      setStage('Ready');
-      setIsExiting(true);
-      setTimeout(() => onComplete?.(), 420);
-    };
-
-    video.addEventListener('timeupdate', onTimeUpdate);
-    video.addEventListener('ended', onEnded);
-
-    // Fallback: if video fails to load, complete after 2s
-    const fallbackTimer = setTimeout(() => {
-      if (!video.duration || video.paused) {
-        setProgress(100);
-        setStage('Ready');
+      if (currentProgress >= 100) {
+        clearInterval(interval);
         setIsExiting(true);
-        setTimeout(() => onComplete?.(), 420);
+        setTimeout(() => onComplete?.(), 300);
       }
-    }, 4000);
+    }, 40);
 
-    video.play().catch(() => {
-      // Autoplay blocked – complete immediately
-      setIsExiting(true);
-      setTimeout(() => onComplete?.(), 300);
-    });
-
-    return () => {
-      video.removeEventListener('timeupdate', onTimeUpdate);
-      video.removeEventListener('ended', onEnded);
-      clearTimeout(fallbackTimer);
-    };
+    return () => clearInterval(interval);
   }, [onComplete]);
 
   return (
     <div className={`loading-screen ${isExiting ? 'is-exiting' : ''}`} role="status" aria-live="polite">
       <div className="loading-bg-glow" />
       <div className="loading-center-cluster">
-        <div className="loading-video-container">
-          <video
-            ref={videoRef}
-            className="loading-video"
-            src="/covenx-logo-animation.mp4"
-            muted
-            playsInline
-            preload="auto"
-          />
+        <div className="loading-brand-icon">
+          <div className="loading-pulse-ring" />
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3ee09a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
         </div>
 
         <div className="loading-copy-block">

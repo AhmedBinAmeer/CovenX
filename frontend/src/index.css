@@ -676,24 +676,28 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: covenx-scale-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.loading-video-container {
+.loading-brand-icon {
   position: relative;
   z-index: 3;
-  width: 240px;
-  height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 90px;
+  height: 90px;
   border-radius: 24px;
-  overflow: hidden;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.28));
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 36px rgba(16, 185, 129, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  margin-bottom: 4px;
 }
 
-.loading-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 24px;
-  filter: drop-shadow(0 16px 40px rgba(45, 168, 117, 0.25));
+.loading-pulse-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 32px;
+  border: 1.5px solid rgba(52, 211, 153, 0.4);
+  animation: helpdesk-ring-pulse 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+  pointer-events: none;
 }
 
 .loading-copy-block {
@@ -2026,9 +2030,45 @@ a.contact-item:hover { color: #ffffff; }
   --motion-fast: 150ms;
   --motion-base: 220ms;
   --motion-slow: 620ms;
+  --cursor-green-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M3 2L10 20L13 13L20 10L3 2Z' fill='%23041f17' opacity='0.35' transform='translate(1, 1.5)'/%3E%3Cpath d='M3 2L10 20L13 13L20 10L3 2Z' fill='%233ee09a' stroke='%23041f17' stroke-width='1.3' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 3 2, auto;
+  --cursor-green-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M9 1.5a1.5 1.5 0 0 0-1.5 1.5v7.5l-1.6-1.6a1.7 1.7 0 0 0-2.4 2.4l5.2 5.2A5 5 0 0 0 12.2 18h2.6A5 5 0 0 0 20 13V8.5a1.5 1.5 0 0 0-3 0V8a1.5 1.5 0 0 0-3 0V7.5a1.5 1.5 0 0 0-3 0V3A1.5 1.5 0 0 0 9 1.5z' fill='%23041f17' opacity='0.35' transform='translate(1, 1.5)'/%3E%3Cpath d='M9 1.5a1.5 1.5 0 0 0-1.5 1.5v7.5l-1.6-1.6a1.7 1.7 0 0 0-2.4 2.4l5.2 5.2A5 5 0 0 0 12.2 18h2.6A5 5 0 0 0 20 13V8.5a1.5 1.5 0 0 0-3 0V8a1.5 1.5 0 0 0-3 0V7.5a1.5 1.5 0 0 0-3 0V3A1.5 1.5 0 0 0 9 1.5z' fill='%233ee09a' stroke='%23041f17' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 9 2, pointer;
 }
-html { scroll-behavior: smooth; }
-body { overflow-x: hidden; }
+html {
+  scroll-behavior: smooth;
+  cursor: var(--cursor-green-default);
+}
+body {
+  overflow-x: hidden;
+  cursor: var(--cursor-green-default);
+}
+
+a,
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+select,
+summary,
+.btn,
+.clickable,
+.nav-item,
+.helpdesk-trigger-btn,
+.helpdesk-icon-btn,
+.helpdesk-chip,
+.helpdesk-action-btn,
+.tab,
+.badge-interactive {
+  cursor: var(--cursor-green-pointer) !important;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea {
+  cursor: text;
+}
 
 /* ── Interactive Cursor Glow & Pointer System ────────────────────────────── */
 .cursor-glow-system {
