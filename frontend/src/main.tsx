@@ -119,7 +119,7 @@ function App() {
 }
 
 function Page({ path, navigate, user }: { path: string; navigate: (next: string) => void; user: User }) {
-  const required: Array<[string, Capability]> = [['/', 'report:read'], ['/intake', 'intake:create'], ['/integrations', 'integration:read'], ['/contracts', 'contract:read'], ['/contracts/new', 'contract:create'], ['/approvals', 'approval:read'], ['/obligations', 'obligation:read'], ['/renewals', 'contract:read'], ['/documents', 'document:read'], ['/intelligence', 'contract:read'], ['/notifications', 'notification:read'], ['/templates', 'template:read'], ['/clauses', 'clause:read'], ['/workflows', 'workflow:read'], ['/users', 'user:read'], ['/audit', 'audit:read']];
+  const required: Array<[string, Capability]> = [['/', 'report:read'], ['/intake', 'intake:create'], ['/integrations', 'integration:read'], ['/contracts', 'contract:read'], ['/contracts/new', 'contract:create'], ['/approvals', 'approval:read'], ['/obligations', 'obligation:read'], ['/renewals', 'contract:read'], ['/documents', 'document:read'], ['/intelligence', 'contract:read'], ['/notifications', 'notification:read'], ['/templates', 'template:read'], ['/clauses', 'clause:read'], ['/workflows', 'workflow:read'], ['/users', 'user:create'], ['/audit', 'audit:read']];
   const matched = required.find(([route]) => route === path);
   if (matched && !hasCapability(user, matched[1])) return <NotFound navigate={navigate} denied />;
   if (path.startsWith('/contracts/') && !hasCapability(user, 'contract:read')) return <NotFound navigate={navigate} denied />;
@@ -149,4 +149,48 @@ function Page({ path, navigate, user }: { path: string; navigate: (next: string)
   return <NotFound navigate={navigate} />;
 }
 
-createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('CovenX ErrorBoundary caught:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, maxWidth: 600, margin: '60px auto', textAlign: 'center', backgroundColor: '#fff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+          <h2 style={{ color: '#dc2626', marginBottom: 12 }}>An unexpected UI error occurred</h2>
+          <p style={{ color: '#64748b', fontSize: 14, marginBottom: 20 }}>
+            {this.state.error?.message || 'Something went wrong while rendering this view.'}
+          </p>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              this.setState({ hasError: false, error: null });
+              window.location.reload();
+            }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const container = document.getElementById('root')!;
+const root = (window as any).__covenx_root || createRoot(container);
+(window as any).__covenx_root = root;
+root.render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </React.StrictMode>
+);

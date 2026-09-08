@@ -46,7 +46,12 @@ export function Approvals() {
       }
       setItems(items.filter((x) => x._id !== task._id));
     } catch (e: any) {
-      setError(e.issues?.[0]?.message ?? e.message);
+      const msg = e.issues?.[0]?.message ?? e.message;
+      if (msg === 'APPROVAL_NOT_ASSIGNED') {
+        setError('This approval task is not assigned to your active account or has already been approved.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setBusy(null);
     }

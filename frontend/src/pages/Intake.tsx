@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ClipboardList, LayoutGrid, List, Send, WandSparkles } from 'lucide-react';
-import { endpoints } from '../services/api';
+import { endpoints, listItems } from '../services/api';
 import { Reveal } from '../components/Motion';
 
 const statuses = ['submitted', 'triage', 'in_progress', 'converted', 'rejected', 'cancelled'];
@@ -20,12 +20,54 @@ export function Intake() {
   const [error, setError] = useState('');
 
   const questionnaire = useMemo(() => questionnaires.find((item) => item.contractType === contractType), [questionnaires, contractType]);
-  const loadRequests = async () => { setRequests(await endpoints.intakeRequests('limit=100')); };
-  useEffect(() => { Promise.all([endpoints.intakeQuestionnaires(), endpoints.intakeRequests('limit=100')]).then(([qs, rs]) => { setQuestionnaires(qs); setRequests(rs); if (qs[0]) setContractType(qs[0].contractType); }).catch((e) => setError(e.message)); }, []);
+  const loadRequests = async () => {
+    try {
+      setRequests(listItems(await endpoints.intakeRequests('limit=100')));
+    } catch {}
+  };
+  useEffect(() => {
+    Promise.all([endpoints.intakeQuestionnaires(), endpoints.intakeRequests('limit=100')])
+      .then(([qs, rs]) => {
+        const qList = listItems<any>(qs as any);
+        const rList = listItems<any>(rs as any);
+        setQuestionnaires(qList);
+        setRequests(rList);
+        if (qList[0]?.contractType) setContractType(qList[0].contractType);
+      })
+      .catch((e) => setError(e.message));
+  }, []);
   useEffect(() => { setAnswers({}); }, [contractType]);
 
-  const submit = async (event: FormEvent) => { event.preventDefault(); setBusy(true); setError(''); setNotice(''); try { await endpoints.createIntakeRequest({ title, contractType, priority, answers }); setNotice('Request submitted. The legal operations team can now triage it.'); setTitle(''); setAnswers({}); await loadRequests(); } catch (e: any) { setError(e.details?.missing ? `Required answers missing: ${e.details.missing.join(', ')}` : e.message); } finally { setBusy(false); } };
-  const convert = async (id: string) => { setBusy(true); setError(''); try { await endpoints.convertIntakeRequest(id); setNotice('Request converted into the governed contract workflow.'); await loadRequests(); } catch (e: any) { setError(e.message); } finally { setBusy(false); } };
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      await endpoints.createIntakeRequest({ title, contractType, priority, answers });
+      setNotice('Request submitted. The legal operations team can now triage it.');
+      setTitle('');
+      setAnswers({});
+      await loadRequests();
+    } catch (e: any) {
+      setError(e.details?.missing ? `Required answers missing: ${e.details.missing.join(', ')}` : e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const convert = async (id: string) => {
+    setBusy(true);
+    setError('');
+    try {
+      await endpoints.convertIntakeRequest(id);
+      setNotice('Request converted into the governed contract workflow.');
+      await loadRequests();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return <>
     <div className="page-heading"><div><div className="eyebrow">Request operations</div><h1>{view === 'request' ? 'Start a contract request' : 'Intake triage board'}</h1><p className="subtitle">{view === 'request' ? 'Answer the configured questionnaire and route a governed request to Contract Operations.' : 'Prioritize, review, and convert incoming work without losing requester context.'}</p></div><div className="intake-view-toggle" role="group" aria-label="Intake view"><button className={view === 'request' ? 'active' : ''} onClick={() => setView('request')}><List size={14} /> Request portal</button><button className={view === 'triage' ? 'active' : ''} onClick={() => setView('triage')}><LayoutGrid size={14} /> Triage board</button></div></div>

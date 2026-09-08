@@ -147,6 +147,19 @@ h2 { font-size: 18px; color: #0a1f33; }
 .status-row { display: grid; grid-template-columns: 112px 1fr 42px; gap: 12px; align-items: center; font-size: 12px; color: #536c7e; }
 .progress { height: 7px; border-radius: 9px; background: #edf2f4; overflow: hidden; }
 .progress > span { display: block; height: 100%; border-radius: inherit; background: #1d9365; }
+
+/* ── Contract metadata cards ──────────────────────────────────────────────── */
+.contract-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.contract-meta-item { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: rgba(246, 250, 248, 0.7); border: 1px solid rgba(220, 232, 227, 0.7); transition: border-color 180ms ease; }
+.contract-meta-item:hover { border-color: rgba(45, 168, 117, 0.4); }
+.contract-meta-item.full { grid-column: 1 / -1; }
+.contract-meta-label { font-size: 11px; color: #718596; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.contract-meta-value { font-size: 14px; color: #173149; font-weight: 600; word-break: break-word; }
+.contract-meta-value.highlight { color: #17734f; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+.counterparty-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.counterparty-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #eef5f2; border: 1px solid #d0e4dc; font-size: 12px; color: #174836; font-weight: 500; }
+.counterparty-pill small { color: #618778; font-size: 11px; }
+
 .table-card {
   margin-top: 18px;
   overflow: hidden;
@@ -2460,17 +2473,30 @@ tbody tr:hover td {
 
 /* ── Renewals and expirations command center ──────────────────────────────── */
 .renewal-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
-.renewal-summary-card { display: flex; align-items: center; gap: 12px; padding: 17px; border: 1px solid rgba(16,45,69,.1); border-radius: 14px; background: rgba(255,255,255,.8); box-shadow: 0 12px 28px rgba(16,45,69,.05); animation: covenx-card-in .5s var(--ease-out) both; transition: transform 240ms var(--ease-out), box-shadow 240ms ease, border-color 180ms ease; }
+.renewal-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: 0 14px 34px rgba(16, 45, 69, 0.045), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  animation: covenx-card-in .5s var(--ease-out) both;
+  transition: transform 240ms var(--ease-out), box-shadow 240ms ease, border-color 180ms ease;
+}
 .renewal-summary-card:nth-child(2) { animation-delay: 70ms; }
 .renewal-summary-card:nth-child(3) { animation-delay: 140ms; }
-.renewal-summary-card:hover { transform: translateY(-4px); border-color: rgba(45,168,117,.25); box-shadow: 0 18px 36px rgba(16,45,69,.1); }
-.renewal-summary-card strong, .renewal-summary-card span { display: block; }
-.renewal-summary-card strong { color: #173149; font: 700 28px/1 'Space Grotesk', sans-serif; }
-.renewal-summary-card div > span { color: #718596; font-size: 11px; margin-top: 5px; }
-.renewal-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; }
-.renewal-icon.orange { color: #b85f22; background: #fff0e5; }
-.renewal-icon.blue { color: #3b6590; background: #e9f1fb; }
-.renewal-icon.green { color: #17734f; background: #e2f5ec; }
+.renewal-summary-card:hover { transform: translateY(-4px); border-color: rgba(45,168,117,.35); box-shadow: 0 18px 40px rgba(16,45,69,.08); }
+.renewal-summary-card div strong { color: #173149; font: 700 28px/1 'Space Grotesk', sans-serif; display: block; }
+.renewal-summary-card div span { color: #718596; font-size: 11px; margin-top: 5px; display: block; }
+.renewal-icon { width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; backdrop-filter: blur(8px); }
+.renewal-icon svg { display: block; margin: auto; }
+.renewal-icon.orange { color: #b85f22; background: rgba(255, 240, 229, 0.9); border: 1px solid rgba(216, 117, 43, 0.25); }
+.renewal-icon.blue { color: #2a6bb5; background: rgba(233, 241, 251, 0.9); border: 1px solid rgba(42, 107, 181, 0.25); }
+.renewal-icon.green { color: #17734f; background: rgba(226, 245, 236, 0.9); border: 1px solid rgba(45, 168, 117, 0.25); }
 .renewal-table { overflow: hidden; }
 .segmented-control { display: flex; gap: 3px; padding: 3px; border: 1px solid #e0e8e5; border-radius: 999px; background: #f4f8f6; }
 .segmented-control button { border: 0; border-radius: 999px; padding: 7px 10px; color: #7890a0; background: transparent; font-size: 10px; transition: color 180ms ease, background 180ms ease, transform 180ms var(--ease-out); }
@@ -2533,10 +2559,10 @@ tbody tr:hover td {
 .obligation-summary-card:nth-child(2) { animation-delay: 70ms; }
 .obligation-summary-card:nth-child(3) { animation-delay: 140ms; }
 .obligation-summary-card:hover { transform: translateY(-4px); border-color: rgba(45,168,117,.35); box-shadow: 0 18px 40px rgba(16,45,69,.08); }
-.obligation-summary-card strong, .obligation-summary-card span { display: block; }
-.obligation-summary-card strong { color: #173149; font: 700 28px/1 'Space Grotesk', sans-serif; }
-.obligation-summary-card div > span { color: #718596; font-size: 11px; margin-top: 5px; }
-.obligation-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; backdrop-filter: blur(8px); }
+.obligation-summary-card div strong { color: #173149; font: 700 28px/1 'Space Grotesk', sans-serif; display: block; }
+.obligation-summary-card div span { color: #718596; font-size: 11px; margin-top: 5px; display: block; }
+.obligation-icon { width: 40px; height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; backdrop-filter: blur(8px); }
+.obligation-icon svg { display: block; margin: auto; }
 .obligation-icon.orange { color: #b85f22; background: rgba(255, 240, 229, 0.9); border: 1px solid rgba(216, 117, 43, 0.25); }
 .obligation-icon.red { color: #a84b4a; background: rgba(253, 233, 232, 0.9); border: 1px solid rgba(168, 75, 74, 0.25); }
 .obligation-icon.green { color: #17734f; background: rgba(226, 245, 236, 0.9); border: 1px solid rgba(45, 168, 117, 0.25); }

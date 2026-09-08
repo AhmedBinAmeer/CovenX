@@ -25,6 +25,7 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
 }
 const json = (body: unknown): RequestInit => ({ method: 'POST', body: JSON.stringify(body) });
 const patch = (body: unknown): RequestInit => ({ method: 'PATCH', body: JSON.stringify(body) });
+const del = (body?: unknown): RequestInit => ({ method: 'DELETE', ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });
 
 export const endpoints = {
   login: (body: unknown) => request<{ accessToken: string; user: User; organization?: any }>('/auth/login', json(body)),
@@ -86,7 +87,7 @@ export const endpoints = {
   finalizeUpload: (id: Id, checksum: string) => request<any>(`/documents/${id}/finalize`, json({ checksum })),
   indexDocument: (id: Id) => request<any>(`/documents/${id}/index`, json({})),
   downloadDocument: (id: Id) => request<{ url: string; expiresAt: string }>(`/documents/${id}/download`),
-  deleteDocument: (id: Id, version: number) => request<void>(`/documents/${id}`, json({ version })),
+  deleteDocument: (id: Id, version: number) => request<void>(`/documents/${id}`, del({ version })),
   notifications: (query = '') => request<Paginated<NotificationRecord> | NotificationRecord[]>(`/notifications${query ? `?${query}` : ''}`),
   markNotificationRead: (id: Id, version: number) => request<NotificationRecord>(`/notifications/${id}/read`, patch({ version })),
   notificationPreferences: () => request<any>('/notifications/preferences'),

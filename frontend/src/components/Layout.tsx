@@ -41,7 +41,7 @@ const links: Array<{ path: string; label: string; icon: typeof Gauge; permission
   { path: '/templates', label: 'Templates', icon: Library, permission: 'template:read' },
   { path: '/clauses', label: 'Clauses', icon: Scale, permission: 'clause:read' },
   { path: '/workflows', label: 'Workflows', icon: Workflow, permission: 'workflow:read' },
-  { path: '/users', label: 'Users', icon: Users, permission: 'user:read' },
+  { path: '/users', label: 'Users', icon: Users, permission: 'user:create' },
   { path: '/audit', label: 'Audit log', icon: ScrollText, permission: 'audit:read' },
 ];
 
@@ -161,7 +161,17 @@ export function Layout({
             <div className="breadcrumb">
               <span>CovenX</span>
               <ChevronRight size={14} style={{ verticalAlign: 'middle', margin: '0 6px' }} />
-              <strong>{visibleLinks.find((x) => x.path === path)?.label ?? 'Settings'}</strong>
+              <strong>
+                {path.startsWith('/contracts/')
+                  ? path === '/contracts/new'
+                    ? 'New contract'
+                    : 'Contract details'
+                  : path.startsWith('/negotiation/')
+                  ? 'Negotiation'
+                  : visibleLinks.find((x) => x.path === path)?.label ??
+                    visibleLinks.find((x) => x.path !== '/' && path.startsWith(x.path))?.label ??
+                    'Workspace'}
+              </strong>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>

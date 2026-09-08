@@ -151,6 +151,7 @@ export function Documents() {
                           className="icon-button"
                           aria-label={`Download ${d.fileName}`}
                           disabled={d.scanStatus !== 'clean'}
+                          title={d.scanStatus !== 'clean' ? `Cannot download — scan status: ${d.scanStatus}` : 'Download'}
                           onClick={() => download(d._id)}
                         >
                           <Download size={15} />
@@ -158,7 +159,7 @@ export function Documents() {
                         <button
                           className="icon-button"
                           aria-label={`Index ${d.fileName}`}
-                          disabled={d.scanStatus !== 'clean'}
+                          title="Index for AI search"
                           onClick={() => index(d)}
                         >
                           <Search size={15} />
@@ -166,6 +167,7 @@ export function Documents() {
                         <button
                           className="icon-button"
                           aria-label={`Delete ${d.fileName}`}
+                          title="Delete document"
                           onClick={() => remove(d)}
                         >
                           <Trash2 size={15} />

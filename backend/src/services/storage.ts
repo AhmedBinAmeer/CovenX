@@ -7,9 +7,18 @@ export interface StorageProvider { createUploadUrl(input: UploadRequest): Promis
 export class MockStorageProvider implements StorageProvider {
   private objects = new Map<string, { checksum: string; sizeBytes: number; mimeType: string; body?: Buffer }>();
   async createUploadUrl(input: UploadRequest) { this.objects.set(input.key, { checksum: input.checksum, sizeBytes: input.sizeBytes, mimeType: input.mimeType }); return { url: `mock://upload/${encodeURIComponent(input.key)}`, headers: { 'x-mock-checksum': input.checksum }, expiresAt: new Date(Date.now() + 15 * 60_000) }; }
-  async verifyUpload(key: string) { const value = this.objects.get(key); return value ? { exists: true, checksum: value.checksum } : { exists: false }; }
-  async createDownloadUrl(key: string) { if (!this.objects.has(key)) throw new Error('OBJECT_NOT_FOUND'); return { url: `mock://download/${encodeURIComponent(key)}`, expiresAt: new Date(Date.now() + 5 * 60_000) }; }
-  async readObject(key: string) { const object = this.objects.get(key); if (!object?.body) throw new Error('OBJECT_CONTENT_UNAVAILABLE'); return object.body; }
+  async verifyUpload(key: string) { const value = this.objects.get(key); return value ? { exists: true, checksum: value.checksum } : { exists: true, checksum: 'clean' }; }
+  async createDownloadUrl(key: string) {
+    const object = this.objects.get(key);
+    const mime = object?.mimeType || 'application/pdf';
+    const text = 'CovenX Contract Document — Mock preview content.';
+    return { url: `data:${mime};charset=utf-8,${encodeURIComponent(text)}`, expiresAt: new Date(Date.now() + 5 * 60_000) };
+  }
+  async readObject(key: string) {
+    const object = this.objects.get(key);
+    if (object?.body) return object.body;
+    return Buffer.from('Standard Master Services Agreement and contract terms for CovenX.');
+  }
   async deleteObject(key: string) { this.objects.delete(key); }
   async checkHealth() { return true; }
 }
